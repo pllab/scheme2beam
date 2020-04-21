@@ -30,4 +30,5 @@ a more fully featured language such as Java.
 ## Resources
 
 - [List of lots of other languages that run on the BEAM](https://github.com/llaisdy/beam_languages)
-       
+- [The BEAM Book](https://blog.stenmans.org/theBeamBook/#_preface)
+
