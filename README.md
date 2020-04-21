@@ -17,13 +17,17 @@ a more fully featured language such as Java.
   3. Begin targeting a translation from scheme.
      This at the moment is largely research-oriented, as neither of us yet feel
      confident we know how to proceed much pas this point.
-  .
-  .
-  .
-  10?  Hopefully we can add concurrency features.
+  4. ...
+  5. ...
+  6. ...
+  7. Hopefully we can add concurrency features.
        Interesting approaches are here:
        https://www.sciencedirect.com/science/article/pii/S030439750600555X
        and
        here:
        https://arxiv.org/pdf/1312.2702.pdf
+       
+## Resources
+
+- [List of lots of other languages that run on the BEAM](https://github.com/llaisdy/beam_languages)
        
