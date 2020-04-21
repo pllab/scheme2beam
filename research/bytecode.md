@@ -1,6 +1,6 @@
 # Bytecode notes
 
-Source compiler flows like this:
+Erlang source compiler flows like this:
 
 ```
 Erlang → Erlang Abstract Format → Core Erlang → BEAM Bytecode
@@ -15,13 +15,13 @@ Most of Core Erlang consists of functions, case statements, guards, and let bind
 To extract Core Erlang from an Erlang module:
 
 ```
- > erlc +to_core my_module.erl
+ $ erlc +to_core my_module.erl
 ```
 
 To compile a Core Erlang file:
 
 ```
- > erlc my_module.core
+ $ erlc my_module.core
 ```
 
 ## Erlang Abstract Format
@@ -37,5 +37,5 @@ Erlang compiler front-end passes operate over the abstract format. It's pretty c
 - [Erlang abstract format](http://erlang.org/doc/apps/erts/absform.html)
 - [Implementing languages on the BEAM (video)](https://www.youtube.com/watch?v=qm0mbQbc9Kc)
 - [Core Erlang source](https://github.com/erlang/otp/blob/master/lib/compiler/src/cerl.erl)
-	- Unfortunately, reading the source code for the `cerl` module is the closing thing we have to an up-to-date "specification" for Core Erlang. But due to the simplicity of the IR, this isn't terrible. It just may make debugging malformed Core Erlang a little tricky. Luckily there seem to be a good amount of other resources about Core Erlang out there. 
+	- Unfortunately, reading the source code for the `cerl` module is the closest thing we have to an up-to-date "specification" for Core Erlang. But due to the simplicity of the IR, this isn't terrible. It just may make debugging malformed Core Erlang a little tricky. Luckily there seems to be a good amount of other resources about Core Erlang out there. 
 
