@@ -14,7 +14,7 @@ a more fully featured language such as Java.
      Examples exist using Rust, we've learned:
      https://github.com/gleam-lang/gleam
      But we may also choose either scheme or erlang itself.
-  3. Begin targeting a translation from scheme.
+  3. Begin targeting a translation from scheme using Ocaml as the source compiler language.
      This at the moment is largely research-oriented, as neither of us yet feel
      confident we know how to proceed much pas this point.
   4. ...
