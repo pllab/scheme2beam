@@ -1,0 +1,40 @@
+module 'map_test' ['module_info'/0,
+		   'module_info'/1,
+		   'start'/0]
+    attributes [%% Line 1
+		'file' =
+		    %% Line 1
+		    [{[109|[97|[112|[95|[116|[101|[115|[116|[46|[101|[114|[108]]]]]]]]]]]],1}]]
+'start'/0 =
+    %% Line 9
+    fun () ->
+	let <L> =
+	    call %% Line 10
+		 'lists':%% Line 10
+			 'seq'
+		(%% Line 10
+		 1, %% Line 10
+		    4)
+	in  let <_3> =
+		fun (_1) ->
+		    %% Line 11
+		    call 'factorial':'fact'
+			(_1)
+	    in  let <M> =
+		    call %% Line 11
+			 'lists':%% Line 11
+				 'map'
+			(_3, %% Line 11
+			     L)
+		in  %% Line 12
+		    call 'io':'format'
+			([76|[105|[115|[116|[32|[105|[115|[32|[126|[112|[126|[110]]]]]]]]]]]], [M|[]])
+'module_info'/0 =
+    fun () ->
+	call 'erlang':'get_module_info'
+	    ('map_test')
+'module_info'/1 =
+    fun (_0) ->
+	call 'erlang':'get_module_info'
+	    ('map_test', _0)
+end
