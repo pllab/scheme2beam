@@ -1,0 +1,19 @@
+*.annot
+*.cmo
+*.cma
+*.cmi
+*.a
+*.o
+*.cmx
+*.cmxs
+*.cmxa
+
+# ocamlbuild targets
+*.byte
+*.native
+
+# Dune generated files
+*.install
+
+# Local OPAM switch
+_opam/
