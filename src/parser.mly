@@ -1,8 +1,8 @@
 %{  (* Header. *)
-(* let rec cons_of_list l last = *)
-(*     match l with *)
-(*     | [] -> last  (* The last element at the end of the chain of conses. *) *)
-(*     | x::xs -> Sexpr.Cons (x, cons_of_list xs last) *)
+let rec cons_of_list l last =
+    match l with
+    | [] -> last  (* The last element at the end of the chain of conses. *)
+    | x::xs -> Sexpr.Cons (x, cons_of_list xs last)
 %}
 
 /* Ocamlyacc declarations */
@@ -15,7 +15,6 @@
 %token <string> ID
 %token <char> CHAR
 %token <string> STRING
-%token <string> LAMBDA /* probably a string right? */
 %token QUOTE
 %token QUASIQUOTE
 %token UNQUOTE
@@ -23,68 +22,68 @@
 %token EOF
 
 %start parse
-%type <Cerl.cexp option> parse
-/* %type <Cerl.cexp>        cexp */
-%type <Cerl.cexp>        atom
-/* %type <Cerl.cexp list>   slist */
-/* %type <Cerl.cexp list>   sexpr_list */
+%type <Sexpr.sexpr option> parse
+%type <Sexpr.sexpr>        sexpr
+%type <Sexpr.sexpr>        atom
+%type <Sexpr.sexpr list>   slist
+%type <Sexpr.sexpr list>   sexpr_list
 
 %%
 
 /* Grammar rules. */
-parse: atom { Some $1 }
+parse: sexpr { Some $1 }
   | EOF { None }
 ;
 
-/* sexpr: atom { $1 } */
-/*   | quoted { Sexpr.Cons (Sexpr.Id "quote", Sexpr.Cons ($1, Sexpr.Nil)) } */
-/*   | quasiquoted { Sexpr.Cons (Sexpr.Id "quasiquote", Sexpr.Cons ($1, Sexpr.Nil)) } */
-/*   | unquoted { Sexpr.Cons (Sexpr.Id "unquote", Sexpr.Cons ($1, Sexpr.Nil)) } */
-/*   | slist { cons_of_list $1 Sexpr.Nil } */
-/*   | dotted_slist { match $1 with (l, e) -> cons_of_list l e } */
-/*   | vector { Sexpr.Vector $1 } */
-/* ; */
-
-atom: /* BOOL { Cerl.Bool $1 } */
-  | INT { Cerl.Int $1 }
-  /* | REAL { Sexpr.Real $1 } */
-  /* | CHAR { Sexpr.Char $1 } */
-  | STRING { Cerl.Atom $1 }
-  | ID { Cerl.Var $1 }
+sexpr: atom { $1 }
+  | quoted { Sexpr.Cons (Sexpr.Id "quote", Sexpr.Cons ($1, Sexpr.Nil)) }
+  | quasiquoted { Sexpr.Cons (Sexpr.Id "quasiquote", Sexpr.Cons ($1, Sexpr.Nil)) }
+  | unquoted { Sexpr.Cons (Sexpr.Id "unquote", Sexpr.Cons ($1, Sexpr.Nil)) }
+  | slist { cons_of_list $1 Sexpr.Nil }
+  | dotted_slist { match $1 with (l, e) -> cons_of_list l e }
+  | vector { Sexpr.Vector $1 }
 ;
 
-/* quoted: QUOTE sexpr { $2 } */
-/* ; */
+atom: BOOL { Sexpr.Bool $1 }
+  | INT { Sexpr.Int $1 }
+  | REAL { Sexpr.Real $1 }
+  | CHAR { Sexpr.Char $1 }
+  | STRING { Sexpr.String $1 }
+  | ID { Sexpr.Id $1 }
+;
 
-/* quasiquoted: QUASIQUOTE sexpr { $2 } */
-/* ; */
+quoted: QUOTE sexpr { $2 }
+;
 
-/* unquoted: UNQUOTE sexpr { $2 } */
-/* ; */
+quasiquoted: QUASIQUOTE sexpr { $2 }
+;
 
-/* /\* List of S-expressions, surrounded by parentheses. *\/ */
-/* slist: LPAREN RPAREN { [] } */
-/*   | LSPAREN RSPAREN { [] } */
-/*   | LPAREN sexpr_list RPAREN { $2 } */
-/*   | LSPAREN sexpr_list RSPAREN { $2 } */
-/* ; */
+unquoted: UNQUOTE sexpr { $2 }
+;
 
-/* dotted_slist: LPAREN sexpr_list DOT sexpr RPAREN { ($2, $4) } */
-/*   | LSPAREN sexpr_list DOT sexpr RSPAREN { ($2, $4) } */
-/* ; */
+/* List of S-expressions, surrounded by parentheses. */
+slist: LPAREN RPAREN { [] }
+  | LSPAREN RSPAREN { [] }
+  | LPAREN sexpr_list RPAREN { $2 }
+  | LSPAREN sexpr_list RSPAREN { $2 }
+;
 
-/* vector: HASH LPAREN RPAREN { [||] } */
-/*   | HASH LSPAREN RSPAREN { [||] } */
-/*   | HASH LPAREN sexpr_list RPAREN { Array.of_list $3 } */
-/*   | HASH LSPAREN sexpr_list RSPAREN { Array.of_list $3 } */
-/* ; */
+dotted_slist: LPAREN sexpr_list DOT sexpr RPAREN { ($2, $4) }
+  | LSPAREN sexpr_list DOT sexpr RSPAREN { ($2, $4) }
+;
 
-/* /\* Contents of a list of s-expressions, without the parentheses. */
-/*  * Empty lists are valid s-expressions. */
-/*  *\/ */
-/* sexpr_list: sexpr { [$1] } */
-/*   | sexpr_list sexpr { $1 @ [$2] } */
-/* ; */
+vector: HASH LPAREN RPAREN { [||] }
+  | HASH LSPAREN RSPAREN { [||] }
+  | HASH LPAREN sexpr_list RPAREN { Array.of_list $3 }
+  | HASH LSPAREN sexpr_list RSPAREN { Array.of_list $3 }
+;
+
+/* Contents of a list of s-expressions, without the parentheses.
+ * Empty lists are valid s-expressions.
+ */
+sexpr_list: sexpr { [$1] }
+  | sexpr_list sexpr { $1 @ [$2] }
+;
 
 %%
 

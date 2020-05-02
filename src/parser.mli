@@ -17,4 +17,4 @@ type token =
   | EOF
 
 val parse :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Cerl.cexp option
+  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Sexpr.sexpr option

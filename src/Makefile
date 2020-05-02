@@ -1,7 +1,7 @@
 .PHONY: default
 default: _main
 
-_main: lexer.cmo parser.cmo cerl.cmo main.ml
+_main: lexer.cmo parser.cmo cerl.cmo sexpr.cmo env.cmo eval.cmo primitives.cmo main.ml 
 	ocamlc $^ -o $@
 
 lexer_test: lexer.cmo parser.cmo lexer_test.ml
@@ -22,8 +22,8 @@ lexer.cmo: lexer.ml
 lexer.ml: parser.cmo lexer.mll
 	ocamllex lexer.mll
 
-parser.cmo: cerl.cmo parser.ml
-	ocamlc -c cerl.cmo parser.mli parser.ml
+parser.cmo: sexpr.cmo parser.ml
+	ocamlc -c sexpr.cmo parser.mli parser.ml
 
 parser.ml: parser.mly
 	ocamlyacc $<
