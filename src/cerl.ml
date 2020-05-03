@@ -4,7 +4,7 @@
 
 type cexp =
     | Alias
-    | Apply
+    | Apply of string * int * cexp list
     | Binary
     | Bitstr
     | Call of string * string * cexp list
@@ -13,7 +13,7 @@ type cexp =
     | Clause of cexp * cexp * cexp
     | Cons
     | Fun of string * int * cexp list * cexp (* name, arity, args, body *)
-    | Let of cexp list * cexp * cexp
+    | Let of cexp * cexp * cexp
     | Letrec
     | Literal
     | Map

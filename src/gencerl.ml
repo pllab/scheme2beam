@@ -30,6 +30,12 @@ let print_values (values : cexp list) : string =
 
 let rec gen_cerl (e : cexp) (tabs : string) : string =
     match e with
+    | Apply(name, arity, args) ->
+            Printf.sprintf "apply '%s'/%d(%s)"
+                name
+                arity
+                (values_to_string args)
+
     | Atom(a) -> Printf.sprintf "'%s'" a
     | Int(n) -> Printf.sprintf "%d" n
 
@@ -52,7 +58,15 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                 (gen_cerl patterns tabs)
                 (gen_cerl guard tabs)
                 (tabs ^ tab)
-                (gen_cerl body tabs)
+                (gen_cerl body (tabs ^ tab))
+
+    | Let(vars, arg, body) ->
+            Printf.sprintf "let %s = %s\n%sin\n%s%s"
+                (gen_cerl vars tabs)
+                (gen_cerl arg tabs)
+                tabs
+                (tabs ^ tab)
+                (gen_cerl body (tabs ^ tab))
 
     | Fun(name, arity, vars, body) ->
             Printf.sprintf "'%s'/%d =\n%sfun (%s) ->\n%s%s\n"
