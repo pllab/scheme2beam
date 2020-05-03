@@ -2,18 +2,18 @@
  *
  *)
 
-type cexp = 
+type cexp =
     | Alias
     | Apply
-    | Binary 
+    | Binary
     | Bitstr
-    | Call
-    | Case of cexp * cexp list  (* cexp list must be Clause *)
+    | Call of string * string * cexp list
+    | Case of cexp * cexp list (* cexp list must be Clause *)
     | Catch
     | Clause of cexp * cexp * cexp
     | Cons
-    | Fun of string * int * cexp list * cexp  (* name, arity, args, body *)
-    | Let of cexp list * cexp * cexp 
+    | Fun of string * int * cexp list * cexp (* name, arity, args, body *)
+    | Let of cexp list * cexp * cexp
     | Letrec
     | Literal
     | Map
@@ -29,4 +29,3 @@ type cexp =
     (* base *)
     | Atom of string
     | Int of int
-
