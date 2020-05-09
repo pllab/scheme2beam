@@ -46,3 +46,7 @@ let rec string_of_cexp c =
   | Case(cl1, cl2) -> "case <" ^ (List.fold_right (fun x y -> (string_of_cexp x) ^ "," ^ y) cl1 "") ^ ">" ^
                         " of " ^
                           (List.fold_right (fun x y -> (string_of_cexp x) ^ y) cl2 "")
+  | Let(arg_list, exp, body) -> "Let <" ^  (List.fold_right (fun x y -> (string_of_cexp x) ^ y) arg_list "") ^ "> = "
+                                ^ (string_of_cexp exp)
+                                ^ " in "
+                                ^ (string_of_cexp body)

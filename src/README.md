@@ -3,16 +3,23 @@
 ## Lexing with Sexps
 This is some code illustrating JaneStreet's sexplib parser, which takes a string to an S-expression.
 A minimal example may be created by 
-```$ ocamlfind ocamlc -linkpkg -package sexplib sexp.ml  -o sexp_example.byte```
+```
+$ eval `opam config env`
+$ ocamlfind ocamlc -linkpkg -package sexplib sexp.ml  -o sexp_example.byte```
 and run according to
 ``` $ ./sexp_example```
 
-Alternatively, in an interactive shell:
+Alternatively, in an interactive shell (ensuring you've eval'ed the opam environment as above):
 
 ```
 # #use topfind;;
 # #require "sexplib";;
 # open Sexplib;;
+# #load "cerl.cmo";;
+# open Cerl;;
+# #load "sparser.cmo";;
+# open Sparser;;
+
 # let x = Sexp.of_string "(this)";;
 - : Sexplib.Sexp.t = Sexplib.Sexp.List [Sexplib.Sexp.Atom "this"]
 
