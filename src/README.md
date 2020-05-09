@@ -10,6 +10,7 @@ and run according to
 Alternatively, in an interactive shell:
 
 ```
+# #use topfind;;
 # #require "sexplib";;
 # open Sexplib;;
 # let x = Sexp.of_string "(this)";;
