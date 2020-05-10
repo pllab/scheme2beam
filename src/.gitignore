@@ -19,6 +19,6 @@
 _opam/
 
 # main executable
-s2b
+_s2b
 gencerl_test
 sparse

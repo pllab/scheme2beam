@@ -1,0 +1,19 @@
+#!/bin/bash
+# Wrapper script for starting the Scheme2Beam compiler.
+
+# Absolute path to the directory containing this script.
+DIR="$(dirname "$(readlink --canonicalize "$0")")"
+
+EXECUTABLE="${DIR}/_s2b"
+
+if [ ! -f "${EXECUTABLE}" ]; then
+    echo "Build the Scheme2Beam interpreter first by running 'make'." >&2
+    exit 1
+fi
+
+# Use rlwrap if available (for readline support).
+if command -v rlwrap > /dev/null; then
+    rlwrap "${EXECUTABLE}" "$@"
+else
+    "${EXECUTABLE}" "$@"
+fi
