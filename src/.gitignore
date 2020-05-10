@@ -21,3 +21,4 @@ _opam/
 # main executable
 s2b
 gencerl_test
+sparse
