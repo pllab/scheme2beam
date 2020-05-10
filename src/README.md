@@ -12,7 +12,8 @@ $ ./s2b `pwd`/tests/if_test.scm
 ```
 
 ## Tests
-``` ./gencerl_test
+```
+./gencerl_test
 ```
 
 ## Miscellaneous Notes about doing this in the Ocaml toplevel
