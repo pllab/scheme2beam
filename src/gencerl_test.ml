@@ -2,7 +2,7 @@
  *
  *)
 
-#use "gencerl.ml"
+open Gencerl
 
 let test_to_string a =
     match a with

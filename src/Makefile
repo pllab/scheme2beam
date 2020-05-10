@@ -19,11 +19,14 @@ cerl.cmo: cerl.ml
 gencerl.cmo: gencerl.ml
 	ocamlc -c $^
 
+gencerl_test.cmo: cerl.ml gencerl.ml gencerl_test.ml
+	ocamlc -o gencerl_test $^
+
 env.cmo: env.ml
 	ocamlc -c $^
 
 sparse.cmo: cerl.ml env.ml sparse.ml
-	ocamlfind ocamlc -linkpkg -package sexplib cerl.ml env.ml sparse.ml
+	ocamlfind ocamlc -linkpkg -package sexplib cerl.ml env.ml sparse.ml -o sparse
 
 .PHONY: test
 # test: _main

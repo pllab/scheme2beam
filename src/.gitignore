@@ -17,3 +17,7 @@
 
 # Local OPAM switch
 _opam/
+
+# main executable
+s2b
+gencerl_test
