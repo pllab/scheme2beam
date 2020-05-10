@@ -1,14 +1,14 @@
+
+# ocamlfind ocamlc -linkpkg -package sexplib cerl.ml env.ml sparse.ml
+
 .PHONY: default
-default: _main
+default: _s2b
 
-_main: lexer.cmo parser.cmo cerl.cmo sexpr.cmo env.cmo eval.cmo primitives.cmo main.ml 
-	ocamlc $^ -o $@
+_s2b: cerl.cmo env.cmo sparse.cmo gencerl.ml main.ml #primitives.cmo
+	ocamlfind ocamlc -linkpkg -package sexplib $^ -o $@
 
-lexer_test: lexer.cmo parser.cmo lexer_test.ml
-	ocamlc $^ -o $@
-
-parser_test: lexer.cmo parser.cmo parser_test.ml
-	ocamlc $^ -o $@
+# sparse_test: lexer.cmo parser.cmo parser_test.ml
+# 	ocamlc $^ -o $@
 
 %.cmo: %.mli %.ml
 	ocamlc -c $^
@@ -16,17 +16,14 @@ parser_test: lexer.cmo parser.cmo parser_test.ml
 cerl.cmo: cerl.ml
 	ocamlc -c $^
 
-lexer.cmo: lexer.ml
+gencerl.cmo: gencerl.ml
 	ocamlc -c $^
 
-lexer.ml: parser.cmo lexer.mll
-	ocamllex lexer.mll
+env.cmo: env.ml
+	ocamlc -c $^
 
-parser.cmo: sexpr.cmo parser.ml
-	ocamlc -c sexpr.cmo parser.mli parser.ml
-
-parser.ml: parser.mly
-	ocamlyacc $<
+sparse.cmo: cerl.ml env.ml sparse.ml
+	ocamlfind ocamlc -linkpkg -package sexplib cerl.ml env.ml sparse.ml
 
 .PHONY: test
 # test: _main
@@ -39,8 +36,5 @@ parser.ml: parser.mly
 
 .PHONY: clean
 clean:
-	rm -f *\.cmo \.cmi \
-		lexer.ml lexer.mli \
-		parser.ml parser.mli \
-		lexer_test parser_test \
-		_scheme
+	rm -f *\.cmo *\.cmi \
+		_s2b
