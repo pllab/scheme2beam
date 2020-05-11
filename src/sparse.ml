@@ -39,14 +39,14 @@ let rec parse(e: Cenv.env) (s: Sexp.t): (Cenv.env * Cerl.cexp) =
   | Sexp.List(Sexp.Atom("lambda") :: arg_list :: body :: []) ->
      parse_func e "" arg_list body
 
-  (* (\* at this point, just by default, we assume we're dealing with an application *\)
-   * | Sexp.List(proc :: values) - >
-   *     let n, arity = (match (parse e proc) with
-   *       | environ, Fun(name, arity, args, body) -> name, arity
-   *       | _ -> raise ParserError)
-   *     in
-   *     let e', value_list = parse e values
-   *     in e', Apply(name, arity, Values(value_list)) *)
+  (* at this point, just by default, we assume we're dealing with an application *)
+  | Sexp.List(proc :: values :: []) ->
+      let n, arity = (match (parse e proc) with
+        | environ, Fun(name, arity, args, body) -> name, arity
+        | _ -> raise ParserError)
+      in
+      let e', value_list = parse e values
+      in e', Apply(n, arity, [Values([value_list])])
   | _ -> raise ParserError
 and
 

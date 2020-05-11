@@ -6,7 +6,7 @@
 .PHONY: default
 default: _s2b
 
-_s2b: cerl.cmo cenv.cmo sparse.cmo gencerl.ml gencerl_test.ml main.ml #primitives.cmo
+_s2b: cerl.cmo cenv.cmo sparse.cmo gencerl.ml main.ml #primitives.cmo
 	ocamlfind ocamlc -linkpkg -package sexplib $^ -o $@
 
 # sparse_test: lexer.cmo parser.cmo parser_test.ml
