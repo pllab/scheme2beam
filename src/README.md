@@ -1,6 +1,9 @@
 
 # How to Run
 ```
+# if you don't already have Janestreet's Sexplib installed
+$ opam install sexplib
+
 $ eval `opam config env`
 $ make
 ```
