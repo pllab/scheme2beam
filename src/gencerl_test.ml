@@ -98,3 +98,22 @@ let () =
     print_endline "factorial function:";
     print_endline p;
 
+    let p = start_gen_cerl (Fun("i",
+                            1,
+                            [Var("_0")],
+                            Let(Values([Var("_0"); Var("X"); Var("Y")]),
+                                Case(Var("_0"),
+                                    [Clause(Values([Atom("a")]),
+                                        Atom("true"),
+                                        Values([Int(10); Int(0); Int(10)]));
+                                    Clause(Values([Atom("b")]),
+                                        Atom("true"),
+                                        Values([Int(17); Int(23); Int(17)]));
+                                    Clause(Values([Var("_1")]),
+                                        Atom("true"),
+                                        Primop("match_fail",[Tuple([Atom("case_clause"); Var("_1")])]))]),
+                                Tuple([Var("X"); Var("Y")]))))
+    in
+    print_endline "let with multiple bindings and primop test:";
+    print_endline p;
+

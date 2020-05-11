@@ -1,0 +1,38 @@
+module 'casebind' ['module_info'/0,
+		   'module_info'/1]
+    attributes [%% Line 1
+		'file' =
+		    %% Line 1
+		    [{[109|[117|[108|[116|[105|[98|[105|[110|[100|[108|[101|[116|[46|[101|[114|[108]]]]]]]]]]]]]]]],1}]]
+'i'/1 =
+    %% Line 5
+    fun (_0) ->
+	let <X,Y> =
+	    case _0 of
+	      %% Line 7
+	      <'a'> when 'true' ->
+		  %% Line 8
+		  <1,%% Line 9
+		     10>
+	      %% Line 10
+	      <'b'> when 'true' ->
+		  %% Line 11
+		  <23,%% Line 12
+		      17>
+	      ( <_5> when 'true' ->
+		    %% Line 6
+		    primop 'match_fail'
+			({'case_clause',_5})
+		-| ['compiler_generated'] )
+	    end
+	in  %% Line 14
+	    {X,Y}
+'module_info'/0 =
+    fun () ->
+	call 'erlang':'get_module_info'
+	    ('casebind')
+'module_info'/1 =
+    fun (_0) ->
+	call 'erlang':'get_module_info'
+	    ('casebind', _0)
+end

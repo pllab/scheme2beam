@@ -25,8 +25,15 @@ let rec values_to_string = function
     | Var(v)::values -> v ^ "," ^ values_to_string values
     | _ -> raise InvalidArgumentError
 
-let print_values (values : cexp list) : string =
-    Printf.sprintf "<%s>" (values_to_string values)
+let rec tuple_to_string = function
+    [] -> ""
+    | Atom(a)::[] -> (Printf.sprintf "'%s'" a) ^ values_to_string []
+    | Atom(a)::values -> (Printf.sprintf "'%s'" a) ^ "," ^ values_to_string values
+    | Int(n)::[] -> (Printf.sprintf "%d" n) ^ values_to_string []
+    | Int(n)::values -> (Printf.sprintf "%d" n) ^ "," ^ values_to_string values
+    | Var(v)::[] -> v ^ values_to_string []
+    | Var(v)::values -> v ^ "," ^ values_to_string values
+    | _ -> raise InvalidArgumentError
 
 let rec gen_cerl (e : cexp) (tabs : string) : string =
     match e with
@@ -60,14 +67,6 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                 (tabs ^ tab)
                 (gen_cerl body (tabs ^ tab))
 
-    | Let(vars, arg, body) ->
-            Printf.sprintf "let %s = %s\n%sin\n%s%s"
-                (gen_cerl vars tabs)
-                (gen_cerl arg tabs)
-                tabs
-                (tabs ^ tab)
-                (gen_cerl body (tabs ^ tab))
-
     | Fun(name, arity, vars, body) ->
             Printf.sprintf "'%s'/%d =\n%sfun (%s) ->\n%s%s\n"
                 name
@@ -77,7 +76,39 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                 (tabs ^ tab)
                 (gen_cerl body (tabs ^ tab))
 
-    | Values(values) -> print_values values
+    | Let(vars, arg, body) ->
+            Printf.sprintf "let %s =\n%s%s\n%sin\n%s%s"
+                (gen_cerl vars tabs)
+                (tabs ^ tab)
+                (gen_cerl arg (tabs ^ tab))
+                tabs
+                (tabs ^ tab)
+                (gen_cerl body (tabs ^ tab))
+
+    | Module(name, exports, attributes, definitions) ->
+            (*Printf.sprintf "module '%s' [%s] attributes [%s]\n%send"*)
+            Printf.sprintf "module '%s'"
+                name
+                (*(gen_cerl exports tabs)
+                (gen_cerl attributes tabs)
+                (gen_cerl definitions tabs)*)
+    | Export(name, arity) ->
+            Printf.sprintf "'%s'/%d"
+                name
+                arity
+    | Attribute(k, t) ->
+            Printf.sprintf ""
+
+    | Primop(name, args) ->
+            Printf.sprintf "primop '%s'(%s)"
+                name
+                (List.fold_left (fun x y -> x ^ "," ^ y) ""
+                    (List.map2 gen_cerl args (List.init (List.length args) (fun x -> tabs))))
+
+    | Tuple(elements) ->
+            Printf.sprintf "{%s}" (values_to_string elements)
+    | Values(values) ->
+            Printf.sprintf "<%s>" (values_to_string values)
     | Var(name) -> name
 
     | _ -> raise SyntaxError
