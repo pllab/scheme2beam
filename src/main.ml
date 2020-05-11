@@ -23,9 +23,9 @@ let load_scm_file env filepath =
  *   Sys.chdir original_cwd
  * (\* WARN: catch errors and close file properly. *\) *)
 
-let primitive_env() : Env.env =
+let primitive_env() : Cenv.env =
   (* Create an empty environment. *)
-    let root_env = Env.make_env None in    
+    let root_env = Cenv.make_env None in    
     (* (\* Load primitives implemented in OCaml. *\)
      * Primitives.load_primitives root_env; *)
     (* (\* Load primitives implemented in Scheme. *\)

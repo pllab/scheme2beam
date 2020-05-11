@@ -1,0 +1,27 @@
+module 'anon' ['module_info'/0,
+	       'module_info'/1,
+	       'start'/0]
+    attributes [%% Line 1
+		'file' =
+		    %% Line 1
+		    [{[97|[110|[111|[110|[46|[101|[114|[108]]]]]]]],1}]]
+'start'/0 =
+    %% Line 5
+    fun () ->
+	let <Sum> =
+	    fun (_1,_0) ->
+		%% Line 6
+		call 'erlang':'+'
+		    (_1, _0)
+	in  %% Line 7
+	    apply Sum
+		(4, 3)
+'module_info'/0 =
+    fun () ->
+	call 'erlang':'get_module_info'
+	    ('anon')
+'module_info'/1 =
+    fun (_0) ->
+	call 'erlang':'get_module_info'
+	    ('anon', _0)
+end
