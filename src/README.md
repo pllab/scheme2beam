@@ -13,6 +13,7 @@ $ ./s2b `pwd`/tests/if_test.scm
 
 ## Tests
 ```
+make gencerl_test
 ./gencerl_test
 ```
 

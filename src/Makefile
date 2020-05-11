@@ -21,7 +21,7 @@ cerl.cmo: cerl.ml
 gencerl.cmo: gencerl.ml
 	ocamlc -c $^
 
-gencerl_test.cmo: cerl.ml gencerl.ml gencerl_test.ml
+gencerl_test: cerl.ml gencerl.ml gencerl_test.ml
 	ocamlc -o gencerl_test $^
 
 cenv.cmo: cenv.ml cerl.ml
