@@ -1,0 +1,25 @@
+module 'my_factorial' ['factorial'/1,'module_info'/0,'module_info'/1]
+  attributes []
+'factorial'/1 =
+  fun (_@f0) ->
+    case _@f0 of
+      <0> when 'true' ->
+        1
+      <N> when 'true' ->
+        let <_@f1> =
+          call 'erlang':'-'(N,1)
+        in
+          let <_@f2> =
+            apply 'factorial'/1(_@f1)
+          in
+            call 'erlang':'*'(N,_@f2)
+    end
+
+'module_info'/0 =
+  fun () ->
+    call 'erlang':'get_module_info'('my_factorial')
+
+'module_info'/1 =
+  fun (_0) ->
+    call 'erlang':'get_module_info'('my_factorial',_0)
+end

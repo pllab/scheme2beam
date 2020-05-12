@@ -11,7 +11,7 @@ type cexp =
     | Case of cexp * cexp list (* cexp list must be Clause *)
     | Catch
     | Clause of cexp * cexp * cexp
-    | Cons of cexp
+    | Cons
     | Fun of string * int * cexp list * cexp (* name, arity, args, body *)
     | Let of cexp * cexp * cexp
     | Letrec

@@ -19,9 +19,6 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                     (List.map2 gen_cerl args
                         (List.init (List.length args) (fun x -> tabs))))
 
-    | Atom(a) -> Printf.sprintf "'%s'" a
-    | Int(n) -> Printf.sprintf "%d" n
-
     | Call(module_name, fun_name, args) ->
             Printf.sprintf "call '%s':'%s'(%s)"
                 module_name
@@ -106,6 +103,9 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                     (List.map2 gen_cerl values
                         (List.init (List.length values) (fun x -> tabs))))
     | Var(name) -> name
+
+    | Atom(a) -> Printf.sprintf "'%s'" a
+    | Int(n) -> Printf.sprintf "%d" n
 
     | _ -> raise SyntaxError
 
