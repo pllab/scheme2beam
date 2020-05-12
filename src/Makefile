@@ -1,10 +1,12 @@
 
-# ocamlfind ocamlc -linkpkg -package sexplib cerl.ml env.ml sparse.ml
+# ocamlfind ocamlc -linkpkg -package sexplib cerl.ml cenv.ml sparse.ml
+
+# how to combine $ eval `opam config env` ?
 
 .PHONY: default
 default: _s2b
 
-_s2b: cerl.cmo env.cmo sparse.cmo gencerl.ml main.ml #primitives.cmo
+_s2b: cerl.cmo cenv.cmo sparse.cmo gencerl.ml main.ml #primitives.cmo
 	ocamlfind ocamlc -linkpkg -package sexplib $^ -o $@
 
 # sparse_test: lexer.cmo parser.cmo parser_test.ml
@@ -19,14 +21,14 @@ cerl.cmo: cerl.ml
 gencerl.cmo: gencerl.ml
 	ocamlc -c $^
 
-gencerl_test.cmo: cerl.ml gencerl.ml gencerl_test.ml
+gencerl_test: cerl.ml gencerl.ml gencerl_test.ml
 	ocamlc -o gencerl_test $^
 
-env.cmo: env.ml
+cenv.cmo: cenv.ml cerl.ml
 	ocamlc -c $^
 
-sparse.cmo: cerl.ml env.ml sparse.ml
-	ocamlfind ocamlc -linkpkg -package sexplib cerl.ml env.ml sparse.ml -o sparse
+sparse.cmo: cerl.ml cenv.ml sparse.ml
+	ocamlfind ocamlc -linkpkg -package sexplib cerl.ml cenv.ml sparse.ml -o sparse
 
 .PHONY: test
 # test: _main
@@ -40,4 +42,6 @@ sparse.cmo: cerl.ml env.ml sparse.ml
 .PHONY: clean
 clean:
 	rm -f *\.cmo *\.cmi \
-		_s2b
+		_s2b \
+		sparse \
+		gencerl_test

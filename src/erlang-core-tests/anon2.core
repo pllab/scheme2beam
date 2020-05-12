@@ -1,0 +1,23 @@
+module 'anon2' ['module_info'/0,
+		'module_info'/1,
+		'start'/0]
+    attributes [%% Line 1
+		'file' =
+		    %% Line 1
+		    [{[97|[110|[111|[110|[50|[46|[101|[114|[108]]]]]]]]],1}]]
+'start'/0 =
+    %% Line 6
+    fun () ->
+	%% Line 7
+	( fun (_1,_0) ->
+	      _1
+	  -| [{'id',{0,0,'-start/0-fun-0-'}}] )
+'module_info'/0 =
+    fun () ->
+	call 'erlang':'get_module_info'
+	    ('anon2')
+'module_info'/1 =
+    fun (_0) ->
+	call 'erlang':'get_module_info'
+	    ('anon2', _0)
+end
