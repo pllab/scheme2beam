@@ -67,18 +67,26 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                 (gen_cerl body (tabs ^ tab))
 
     | Module(name, exports, attributes, definitions) ->
-            (*Printf.sprintf "module '%s' [%s] attributes [%s]\n%send"*)
-            Printf.sprintf "module '%s'"
+            Printf.sprintf "module '%s' [%s]\n%sattributes [%s]\n%send"
                 name
-                (*(gen_cerl exports tabs)
-                (gen_cerl attributes tabs)
-                (gen_cerl definitions tabs)*)
+                (String.concat ","
+                    (List.map2 gen_cerl exports
+                        (List.init (List.length exports) (fun x -> tabs))))
+                tabs
+                (String.concat ","
+                    (List.map2 gen_cerl attributes
+                        (List.init (List.length attributes) (fun x -> tabs))))
+                (String.concat "\n"
+                    (List.map2 gen_cerl definitions
+                        (List.init (List.length definitions) (fun x -> tabs))))
     | Export(name, arity) ->
             Printf.sprintf "'%s'/%d"
                 name
                 arity
     | Attribute(k, t) ->
-            Printf.sprintf ""
+            Printf.sprintf "%s = %s"
+                (gen_cerl k tabs)
+                (gen_cerl t tabs)
 
     | Primop(name, args) ->
             Printf.sprintf "primop '%s'(%s)"

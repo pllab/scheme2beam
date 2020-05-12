@@ -117,3 +117,32 @@ let () =
     print_endline "let with multiple bindings and primop test:";
     print_endline p;
 
+    let p = start_gen_cerl 
+                    (Module("factorial", 
+                        [Export("module_info", 0); Export("module_info", 1)],
+                        [],
+                        [Fun("factorial",
+                            1,
+                            [Var("_@f0")],
+                            Case(Var("_@f0"),
+                               [Clause(Values([Int(0)]),
+                                    Atom("true"),
+                                    Int(1));
+                                Clause(Values([Var("N")]),
+                                    Atom("true"),
+                                    Let(Values([Var("_@f1")]), 
+                                        Call("erlang","-",[Var("N"); Int(1)]),
+                                        Let(Values([Var("_@f2")]), 
+                                            Apply("factorial",1,[Var("_@f1")]),
+                                            Call("erlang","*",[Var("N"); Var("_@f2")]))))]));
+                        Fun("module_info", 0,
+                            [],
+                            Call("erlang", "get_module_info", [Atom("factorial")]));
+                        Fun("module_info", 1,
+                            [Var("_0")],
+                            Call("erlang", "get_module_info", [Atom("factorial"); Var("_0")]));
+                        ]))
+    in
+    print_endline "factorial module:";
+    print_endline p;
+
