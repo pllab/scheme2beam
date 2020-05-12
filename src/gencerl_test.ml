@@ -111,7 +111,7 @@ let () =
                                         Values([Int(17); Int(23); Int(17)]));
                                     Clause(Values([Var("_1")]),
                                         Atom("true"),
-                                        Primop("match_fail",[Tuple([Atom("case_clause"); Var("_1")])]))]),
+                                        Primop("match_fail",[Tuple([Atom("case_clause"); Var("_1")]); Atom("a")]))]),
                                 Tuple([Var("X"); Var("Y")]))))
     in
     print_endline "let with multiple bindings and primop test:";

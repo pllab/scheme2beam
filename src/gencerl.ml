@@ -9,39 +9,15 @@ exception InvalidArgumentError
 
 let tab = "  "
 
-let rec var_list_to_string = function
-    [] -> ""
-    | Var(v)::[] -> v ^ var_list_to_string []
-    | Var(v)::l -> v ^ "," ^ var_list_to_string l
-    | _ -> raise InvalidArgumentError
-
-let rec values_to_string = function
-    [] -> ""
-    | Atom(a)::[] -> (Printf.sprintf "'%s'" a) ^ values_to_string []
-    | Atom(a)::values -> (Printf.sprintf "'%s'" a) ^ "," ^ values_to_string values
-    | Int(n)::[] -> (Printf.sprintf "%d" n) ^ values_to_string []
-    | Int(n)::values -> (Printf.sprintf "%d" n) ^ "," ^ values_to_string values
-    | Var(v)::[] -> v ^ values_to_string []
-    | Var(v)::values -> v ^ "," ^ values_to_string values
-    | _ -> raise InvalidArgumentError
-
-let rec tuple_to_string = function
-    [] -> ""
-    | Atom(a)::[] -> (Printf.sprintf "'%s'" a) ^ values_to_string []
-    | Atom(a)::values -> (Printf.sprintf "'%s'" a) ^ "," ^ values_to_string values
-    | Int(n)::[] -> (Printf.sprintf "%d" n) ^ values_to_string []
-    | Int(n)::values -> (Printf.sprintf "%d" n) ^ "," ^ values_to_string values
-    | Var(v)::[] -> v ^ values_to_string []
-    | Var(v)::values -> v ^ "," ^ values_to_string values
-    | _ -> raise InvalidArgumentError
-
 let rec gen_cerl (e : cexp) (tabs : string) : string =
     match e with
     | Apply(name, arity, args) ->
             Printf.sprintf "apply '%s'/%d(%s)"
                 name
                 arity
-                (values_to_string args)
+                (String.concat ","
+                    (List.map2 gen_cerl args
+                        (List.init (List.length args) (fun x -> tabs))))
 
     | Atom(a) -> Printf.sprintf "'%s'" a
     | Int(n) -> Printf.sprintf "%d" n
@@ -50,13 +26,16 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
             Printf.sprintf "call '%s':'%s'(%s)"
                 module_name
                 fun_name
-                (values_to_string args)
+                (String.concat ","
+                    (List.map2 gen_cerl args
+                        (List.init (List.length args) (fun x -> tabs))))
 
     | Case(arg, clauses) ->
             Printf.sprintf "case %s of %s\n%send"
                 (gen_cerl arg (tabs ^ tab))
                 (List.fold_left (fun x y -> x ^ "\n" ^ y) ""
-                    (List.map2 gen_cerl clauses (List.init (List.length clauses) (fun x -> (tabs ^ tab)))))
+                    (List.map2 gen_cerl clauses
+                        (List.init (List.length clauses) (fun x -> (tabs ^ tab)))))
                 tabs
 
     | Clause(patterns, guard, body) ->
@@ -72,7 +51,9 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                 name
                 arity
                 tabs
-                (var_list_to_string vars)
+                (String.concat ","
+                    (List.map2 gen_cerl vars
+                        (List.init (List.length vars) (fun x -> tabs))))
                 (tabs ^ tab)
                 (gen_cerl body (tabs ^ tab))
 
@@ -102,13 +83,20 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
     | Primop(name, args) ->
             Printf.sprintf "primop '%s'(%s)"
                 name
-                (List.fold_left (fun x y -> x ^ "," ^ y) ""
-                    (List.map2 gen_cerl args (List.init (List.length args) (fun x -> tabs))))
+                (String.concat ","
+                    (List.map2 gen_cerl args
+                        (List.init (List.length args) (fun x -> tabs))))
 
     | Tuple(elements) ->
-            Printf.sprintf "{%s}" (values_to_string elements)
+            Printf.sprintf "{%s}"
+                (String.concat ","
+                    (List.map2 gen_cerl elements
+                        (List.init (List.length elements) (fun x -> tabs))))
     | Values(values) ->
-            Printf.sprintf "<%s>" (values_to_string values)
+            Printf.sprintf "<%s>"
+                (String.concat ","
+                    (List.map2 gen_cerl values
+                        (List.init (List.length values) (fun x -> tabs))))
     | Var(name) -> name
 
     | _ -> raise SyntaxError
