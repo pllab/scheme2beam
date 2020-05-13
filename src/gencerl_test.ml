@@ -119,7 +119,7 @@ let () =
 
     let p = start_gen_cerl 
                     (Module("my_factorial", 
-                        [Export("my_factorial",1); Export("module_info", 0); Export("module_info", 1)],
+                        [Export("factorial",1); Export("module_info", 0); Export("module_info", 1)],
                         [],
                         [Fun("factorial",
                             1,
