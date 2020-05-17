@@ -1,9 +1,10 @@
 
 open Cerl
 open Cenv
+open Gencerl
 open Sexplib
 
-exception ParserError
+exception ParserError of string
 
 (* for generating anonymous function names *) 
 let next_l : int64 ref = ref Int64.zero
@@ -26,28 +27,41 @@ let rec is_recursive(l: Sexp.t list) (name: string): bool =
 
 let rec parse(e: Cenv.env) (s: Sexp.t): (Cenv.env * Cerl.cexp) =
   match s with
-  | Sexp.Atom(a) -> parse_atom e a
-  | Sexp.List(Sexp.Atom("if") :: guard :: true_branch :: false_branch :: []) -> parse_cond e guard true_branch false_branch
+  | Sexp.Atom(a) ->
+     let e', expr' = parse_atom e a in e', expr'
+  | Sexp.List(Sexp.Atom("if") :: guard :: true_branch :: false_branch :: []) ->
+     let e', expr' = parse_cond e guard true_branch false_branch in e', expr'
 
   (* todo need to somehow check for recursive calls *)
   | Sexp.List(Sexp.Atom("let") :: arg_map :: body :: []) ->
-     parse_let e arg_map body
+     let e', expr' = parse_let e arg_map body in e', expr'
      
   | Sexp.List(Sexp.Atom("define") :: params :: body :: []) ->
-     parse_define e params body
+     let e', expr' = parse_define e params body in
+     e', expr'
 
   | Sexp.List(Sexp.Atom("lambda") :: arg_list :: body :: []) ->
-     parse_func e "" arg_list body
+     let e', expr' = parse_func e "" arg_list body in e', expr'
+
+  | Sexp.List(Sexp.Atom(op) :: arg1 :: arg2 :: []) ->
+     let e', expr' = parse_binop e op arg1 arg2 in e', expr'
 
   (* at this point, just by default, we assume we're dealing with an application *)
   | Sexp.List(proc :: values) ->
-      let n, arity = (match (parse e proc) with
-        | environ, Fun(name, arity, args, body) -> name, arity
-        | _ -> raise ParserError)
-      in
-      let value_list = List.map (fun x -> let env', expr' = parse e x in expr') values
-      in e, Apply(n, arity, value_list)
-  | _ -> raise ParserError
+     let e', n, arity =
+       (match (parse e proc) with
+        | environ, Var(fname) ->     (* parsed into a variable, e.g. "Var('factorial')" so we look it up *)
+           begin match (Cenv.lookup fname e) with
+           | Fun(name, ar, args, b) -> environ, name, ar
+           | _ -> raise (ParserError ("var: " ^ fname ^ " is not a function object"))
+           end
+        | environ, Fun(name, arity, args, body) -> environ, name, arity   (* parsed into a lambda *)
+        | _ -> raise (ParserError ("Got stuck on: " ^ Sexp.to_string s)))
+     in
+     (* todo each one of these could change the env... how to deal with *)
+      let value_list = List.map (fun x -> let env', expr' = parse e' x in expr') values
+      in e', Apply(n, arity, value_list)
+  | _ -> raise (ParserError ("Global stuck: " ^ Sexp.to_string s ))
 and
 
   parse_define(e: env) (params: Sexp.t) (body: Sexp.t) : (env * cexp) = 
@@ -57,9 +71,13 @@ and
     | Sexp.List(Sexp.Atom(h) :: []) -> (h, [])
     | Sexp.List(Sexp.Atom(h) :: t) -> (h, List.map (fun x -> let env', expr' = parse e x in expr') t)
   in
-  let env', b = parse e body
+  let env' = Cenv.add name (Fun(name, List.length args, args, Values([]))) e  (* add func here with empty body to avoid recursion problem *)
   in
-  (env', Fun(name, List.length args, args, b))
+  let env'', b = parse env' body
+  in
+  let env''' = Cenv.add name (Fun(name, List.length args, args, b)) env''   (* update here with body filled in *)
+  in
+  (env''', Fun(name, List.length args, args, b))
 and
       
   parse_atom(e: env) (s : string) : (env * Cerl.cexp) =
@@ -71,6 +89,15 @@ and
   (* | s -> Atom(s) *) (* todo *)
 and
 
+  parse_binop(e: env) (op: string) (arg1: Sexp.t) (arg2: Sexp.t) : (env * Cerl.cexp) =
+  match op with
+  | "<=" | "*"  | "+"  | "-"  | "<"  | ">"  | "=>" | "/" ->
+     let e', a1 = (parse e arg1) in 
+     let e'', a2 = (parse e' arg2) in
+     (e, Call("erlang", op,  [a1 ; a2]))
+  | _ -> raise (ParserError ("Binop exn: " ^ op ^ " " ^ Sexp.to_string arg1 ^ " " ^ Sexp.to_string arg2 ))
+and
+  
 parse_func(e: Cenv.env) (name: string) (args: Sexp.t) (body: Sexp.t) : (env * cexp) =
   let aux arglist = 
     match arglist with
