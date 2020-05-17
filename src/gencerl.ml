@@ -64,7 +64,7 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                 (gen_cerl body (tabs ^ tab))
 
     | Module(name, exports, attributes, definitions) ->
-            Printf.sprintf "module '%s' [%s]\n%sattributes [%s]\n%send"
+            Printf.sprintf "module '%s' [%s]\n%sattributes [%s]\n%send\n"
                 name
                 (String.concat ","
                     (List.map2 gen_cerl exports
@@ -91,6 +91,23 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                 (String.concat ","
                     (List.map2 gen_cerl args
                         (List.init (List.length args) (fun x -> tabs))))
+
+    | Receive(clauses, timeout, action) ->
+            Printf.sprintf "receive%s\n%safter %s ->\n%s%s"
+                (List.fold_left (fun x y -> x ^ "\n" ^ y) ""
+                    (List.map2 gen_cerl clauses
+                        (List.init (List.length clauses) (fun x -> (tabs ^ tab)))))
+                (tabs ^ tab)
+                (gen_cerl timeout tabs)
+                (tabs ^ tab ^ tab)
+                (gen_cerl action (tabs ^ tab ^ tab))
+
+    | Seq(exp1, exp2) ->
+            Printf.sprintf "do\n%s%s\n%s%s"
+                tabs
+                (gen_cerl exp1 (tabs ^ tab))
+                tabs
+                (gen_cerl exp2 (tabs ^ tab))
 
     | Tuple(elements) ->
             Printf.sprintf "{%s}"

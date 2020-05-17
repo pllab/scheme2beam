@@ -42,8 +42,8 @@ type cexp =
     | Attribute of cexp * cexp
 
     | Primop of string * cexp list
-    | Receive
-    | Seq
+    | Receive of cexp list * cexp * cexp (* Clauses, Timeout, Action *)
+    | Seq of cexp * cexp
     | Try
     | Tuple of cexp list
     | Values of cexp list

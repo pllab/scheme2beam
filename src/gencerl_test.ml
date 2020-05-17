@@ -146,3 +146,15 @@ let () =
     print_endline "factorial module:";
     print_endline p;
 
+    let p = start_gen_cerl (Fun("serve",
+                          0,
+                          [],
+                          Receive(
+                            [Clause(Values([Var("Request")]), 
+                                Atom("true"), 
+                                Seq(Apply("serve",0,[]), Atom("ok")))],
+                            Atom("infinity"),
+                            Atom("true"))))
+    in
+    print_endline "Test receive:";
+    print_endline p;
