@@ -8,6 +8,6 @@
 
 start() ->
     L = lists:seq(1,4),
-    M = lists:map(fun(X)->my_factorial:factorial(X) end, L),
+    M = lists:map(fun(X)->quick:factorial(X) end, L),
     io:format("List is ~p~n", [M]).
     

@@ -3,11 +3,21 @@
  *)
 
 open Cerl
+open Cenv
 
 exception SyntaxError
 exception InvalidArgumentError
 
 let tab = "  "
+
+(* todo this doesn't go through parent contexts yet *)
+let func_names_from_binding (e: Cenv.env) : string list =
+  List.map
+  (fun pr -> fst pr ^ "/" ^ 
+    (match (snd pr) with
+     | Fun(nn,ar,l1,ex) -> (string_of_int ar))
+   e.bindings)
+    
 
 let rec gen_cerl (e : cexp) (tabs : string) : string =
     match e with

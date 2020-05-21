@@ -1,0 +1,117 @@
+module 'send_recv' ['make_request'/2,
+		    'math'/0,
+		    'module_info'/0,
+		    'module_info'/1,
+		    'run'/0,
+		    'serve'/0]
+    attributes [%% Line 1
+		'file' =
+		    %% Line 1
+		    [{[115|[101|[110|[100|[95|[114|[101|[99|[118|[46|[101|[114|[108]]]]]]]]]]]]],1}],
+		%% Line 2
+		'compile' =
+		    %% Line 2
+		    ['export_all']]
+'serve'/0 =
+    %% Line 4
+    fun () ->
+	%% Line 5
+	receive
+	  %% Line 6
+	  <Request> when 'true' ->
+	      do  %% Line 7
+		  call 'io':'format'
+		      ([72|[97|[110|[100|[108|[105|[110|[103|[58|[32|[126|[115|[126|[110]]]]]]]]]]]]]], [Request|[]])
+		  %% Line 8
+		  apply 'serve'/0
+		      ()
+	after 'infinity' ->
+	  'true'
+'math'/0 =
+    %% Line 11
+    fun () ->
+	%% Line 12
+	receive
+	  %% Line 13
+	  <{'add',X,Y}> when 'true' ->
+	      let <_0> =
+		  call %% Line 14
+		       'erlang':%% Line 14
+				'+'
+		      (%% Line 14
+		       X, %% Line 14
+			  Y)
+	      in  do  %% Line 14
+		      call 'io':'format'
+			  ([126|[112|[32|[43|[32|[126|[112|[32|[61|[32|[126|[112|[126|[110]]]]]]]]]]]]]], [X|[Y|[_0|[]]]])
+		      %% Line 15
+		      apply 'math'/0
+			  ()
+	  %% Line 16
+	  <{'sub',X,Y}> when 'true' ->
+	      let <_1> =
+		  call %% Line 17
+		       'erlang':%% Line 17
+				'-'
+		      (%% Line 17
+		       X, %% Line 17
+			  Y)
+	      in  do  %% Line 17
+		      call 'io':'format'
+			  ([126|[112|[32|[45|[32|[126|[112|[32|[61|[32|[126|[112|[126|[110]]]]]]]]]]]]]], [X|[Y|[_1|[]]]])
+		      %% Line 18
+		      apply 'math'/0
+			  ()
+	after 'infinity' ->
+	  'true'
+'make_request'/2 =
+    %% Line 21
+    fun (_0,_1) ->
+	%% Line 22
+	call 'erlang':'!'
+	    (_0, _1)
+'run'/0 =
+    %% Line 24
+    fun () ->
+	let <Pid> =
+	    call %% Line 25
+		 'erlang':%% Line 25
+			  'spawn'
+		(%% Line 25
+		 'send_recv', %% Line 25
+			      'serve', %% Line 25
+				       [])
+	in  do  %% Line 26
+		apply 'make_request'/2
+		    (Pid, 'request1')
+		do  %% Line 27
+		    apply 'make_request'/2
+			(Pid, 'request2')
+		    do  %% Line 29
+			call 'timer':'sleep'
+			    (10)
+			let <Pid2> =
+			    call %% Line 31
+				 'erlang':%% Line 31
+					  'spawn'
+				(%% Line 31
+				 'send_recv', %% Line 31
+					      'math', %% Line 31
+						      [])
+			in  do  %% Line 32
+				call 'erlang':'!'
+				    (Pid2, {'add',1,2})
+				do  %% Line 33
+				    call 'erlang':'!'
+					(Pid2, {'sub',3,2})
+				    %% Line 34
+				    'ok'
+'module_info'/0 =
+    fun () ->
+	call 'erlang':'get_module_info'
+	    ('send_recv')
+'module_info'/1 =
+    fun (_0) ->
+	call 'erlang':'get_module_info'
+	    ('send_recv', _0)
+end

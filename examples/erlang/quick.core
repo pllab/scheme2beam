@@ -1,0 +1,11 @@
+module 'quick' ['factorial'/1]
+  attributes []
+'factorial'/1 =
+  fun (_n) ->
+    case <> of 
+      <> when call 'erlang':'<'(_n,1) ->
+        1
+      <> when 'true' ->
+        call 'erlang':'*'(_n,apply 'factorial'/1(call 'erlang':'-'(_n,1)))
+    end
+end    
