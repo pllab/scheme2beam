@@ -1,0 +1,16 @@
+\section{Discussion}
+\label{sec:discussion}
+
+% Trade-offs in implementation language. 
+The choice to use OCaml as our source compiler language resulted in several trade-offs. 
+Erlang appears to be a natural choice for writing a source compiler for a language to Erlang's VM. 
+Indeed, many languages that run on the BEAM are written in Erlang \cite{}. 
+The biggest advantage here is that the source compiler does not need to specify and reimplement Core Erlang. 
+Language designers can directly use the Core Erlang source code files from the Erlang compiler in their implementation. 
+From a language runtime perspective, this choice also simplifies the runtime environment. 
+End users only rely on the Erlang ecosystem for development---versus having an additional dependency on OCaml as is the case for our source compiler.
+
+On the other hand, we chose OCaml because it is a language we are both familiar with---especially for writing compilers, interpreters, and program analyses. 
+Given the time frame for the project, we felt we would be most productive using a language we are more familiar with, rather than adding more ramp-up time to learn how to write a compiler in Erlang. 
+From a learning perspective, having to specify and implement the abstract and concrete representations of Core Erlang in OCaml taught us a lot about the internals of Erlang. 
+This was an unexpected benefit. 

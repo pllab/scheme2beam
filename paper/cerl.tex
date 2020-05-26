@@ -1,0 +1,74 @@
+\section{The Erlang Compiler}
+\label{sec:erlang-compiler}
+
+At a high level, the flow of the Erlang compiler---from source code to BEAM bytecode---is as follows (see Figure \ref{fig:compiler-flow}). 
+Erlang source code is first transformed to the Erlang \emph{abstract format}. 
+The abstract format is close to the original source code, just represented as an abstract syntax tree. The compiler uses this format for front-end passes. 
+From here, the Erlang abstract format is converted to \emph{Core Erlang}. 
+Core Erlang is an intermediate representation (IR) used by the compiler for optimizations and other program analyses. 
+See Section \ref{sec:core-erlang} for more discussion on Core Erlang. 
+After the Erlang compiler performs optimizations and other program transformations over Core Erlang, it finally compiles down to BEAM bytecode. 
+
+\section{Core Erlang as a Target Language}
+\label{sec:core-erlang}
+
+Core Erlang is a kind of subset of Erlang. 
+Indeed, most high-level language constructs in Erlang source code compile down to sequences of function definitions and applications, case statements, guards, and let bindings in Core Erlang. 
+Being a smaller language (but still higher level than BEAM bytecode) makes Core Erlang an ideal IR for program analyses. 
+This also makes it an ideal target for our source compiler from Scheme. 
+Other language designers have noted this as well. 
+LFE (Lisp Flavored Erlang) \cite{} also compiles its source language to Core Erlang. 
+
+Core Erlang has two syntactic representations: \emph{concrete} and \emph{abstract}. 
+For actually performing program transformations over Core Erlang, the compiler uses the abstract representation, which specifies Core Erlang as data type over all syntactic keywords and constructs in the language. 
+The Erlang compiler optionally emits concrete Core Erlang that is human readable. 
+
+From this, the back end of our source compiler needs to handle both representations of Core Erlang. 
+We need the abstract syntax to map parsed Scheme to constructs in Core Erlang. 
+Then, we need to emit concrete Core Erlang that we feed into the Erlang compiler to produce BEAM bytecode. 
+
+As an example, Figure \ref{fig:factorial} shows a factorial function written in Scheme and how it gets translated to concrete Core Erlang. 
+
+\begin{figure}[!h]
+\begin{lstlisting}[caption={Factorial function written in Scheme.},captionpos=b,frame=single,xleftmargin=1em]
+(define (factorial n)
+  (if (<= n 0)
+      1
+      (* n (factorial (- n 1)))))
+\end{lstlisting}
+\begin{lstlisting}[caption={Scheme factorial function translated to Core Erlang.},captionpos=b,frame=single,xleftmargin=1em]
+module 'quick' ['factorial'/1]
+  attributes []
+'factorial'/1 =
+  fun (_n) ->
+    case <> of 
+      <> when call 'erlang':'<='(_n,0) ->
+        1
+      <> when 'true' ->
+        call 'erlang':'*'(_n,apply 'factorial'/1(call 'erlang':'-'(_n,1)))
+    end
+end
+\end{lstlisting}
+\label{fig:factorial}
+\end{figure}
+
+\subsection{An Abstract Core Erlang Specification for OCaml}
+
+There is no official specification of Core Erlang.
+The only reliable reference is the latest source code in the Erlang compiler. 
+We relied on this closely for specifying Core Erlang in OCaml. 
+
+There are about 30 syntactic constructs that make up Core Erlang. 
+Since we are writing a source compiler for Scheme, we actually did not need to implement every single construct, only the ones necessary for expressing Scheme.
+In the end, we ended up implementing 20 of the 30 language constructs. 
+
+Implementation-wise, this is where OCaml shines. 
+The Core Erlang specification is easily expressed as an algebraic data type in OCaml. 
+
+\subsection{Generating Concrete Core Erlang}
+
+To generate Core Erlang, we relied mostly on header comments in the Core Erlang source code, and our own hand-written Erlang examples that we compiled down to Core Erlang. 
+Although not perfect, this informed us how to format concrete Core Erlang in order to be accepted by the Erlang compiler. 
+
+Given that there is no formal specification of Core Erlang, we were limited in how we verified the correctness of generated Core Erlang. 
+The best assurances we have is that our unit tests are accepted by the Erlang compiler, successfully compile down to BEAM, and can be run on the BEAM. 
