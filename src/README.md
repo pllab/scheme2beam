@@ -87,3 +87,72 @@ Run with:
 $ erl -noshell -s map_test start -s init stop
 ```
 And there you go! That called our generated `my_factorial` module!
+
+
+## Milner's Translation
+
+### Pi Calculus in Erlang
+
+The translation by Vasconcelos and others more or less agree on how to translate
+the lambda calculus into pi calculus.  Having worked through translation on the
+identity function in Erlang to get a running version, the basic skeleton of
+evaluation appears fairly straightforward.  The code in `id.erl` essentially
+comprises this skeleton.
+
+The compiled `id.erl` to `id.core` is our target for translating our `cerl` IR
+into a concurrent/message passing version of the same code.
+
+### Algorithm Skeleton and Example
+
+```
+((define id(x) x) "hey")
+
+  |
+  v
+// internal
+id["id" -> Fun("id", 1, [Var("x")], Var("x"))] 
+
+Apply("id", 1, [Atom("hey")])
+
+  |
+  v
+
+Core Erlang
+```
+
+From the above picture, we would like to:
+
+1. spawn func and arg procs (A, B)
+   - A gets Apply's left value as its function
+   - B gets A.func_recv
+2. send Apply's right arg to A with B
+3. create the A and B functions
+   - B_recv we get for free, it just receives 
+     a single param representing final value
+   - A_func identical form in example
+
+4. which only leaves the eval function over an 
+   arbitrary cerl term
+
+We note that the eval function is the "missing piece" to compiling more
+complicated scheme into Core Erlang.
+
+
+### TODO
+
+1. [ ] "IR pass" to take an Apply to the above racket
+   - focus on identity (since that's all we've done)
+   - above "algorithm", dismantle Apply to fill in above
+   - done by Sunday, May 31
+   - tracing for great good (visualizations)
+
+2. [ ] general eval function to get beyond id
+   - arithmetic
+   - done by June 8
+
+3. [ ] multiple/nested functions
+   - pretty traces
+   - ?
+
+4. [ ] write paper 
+

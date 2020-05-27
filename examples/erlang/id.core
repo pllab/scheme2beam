@@ -1,0 +1,69 @@
+module 'id' ['id'/0,
+	     'id_recv'/0,
+	     'module_info'/0,
+	     'module_info'/1,
+	     'run'/0]
+    attributes []
+'id_recv'/0 =
+    %% Line 4
+    fun () ->
+	%% Line 5
+	receive
+	  %% Line 6
+	  <X> when 'true' ->
+	      %% Line 7
+	      call 'io':'format'
+		  ([126|[112]], [X|[]])
+	after 'infinity' ->
+	  'true'
+'id'/0 =
+    %% Line 10
+    fun () ->
+	%% Line 11
+	receive
+	  <{X,R}> when 'true' ->
+	      do  %% Line 12
+		  call 'erlang':'!'
+		      (R, X)
+		  %% Line 13
+		  apply 'id'/0
+		      ()
+	after 'infinity' ->
+	  'true'
+'run'/0 =
+    %% Line 16
+    fun () ->
+	let <A> =
+	    %% Line 17
+	    call 'erlang':'spawn'
+		('id', 'id', [])
+	in  let <B> =
+		%% Line 18
+		call 'erlang':'spawn'
+		    ('id', 'id_recv', [])
+	    in  do  %% Line 20
+		    call 'erlang':'!'
+			(A, {"hey",B})
+		    %% Line 21
+		    'ok'
+'module_info'/0 =
+    ( fun () ->
+	  ( call ( 'erlang'
+		   -| ['compiler_generated'] ):( 'get_module_info'
+						 -| ['compiler_generated'] )
+		(( 'id'
+		   -| ['compiler_generated'] ))
+	    -| ['compiler_generated'] )
+      -| ['compiler_generated'] )
+'module_info'/1 =
+    ( fun (( _cor0
+	     -| ['compiler_generated'] )) ->
+	  ( call ( 'erlang'
+		   -| ['compiler_generated'] ):( 'get_module_info'
+						 -| ['compiler_generated'] )
+		(( 'id'
+		   -| ['compiler_generated'] ), ( _cor0
+						  -| ['compiler_generated'] ))
+	    -| ['compiler_generated'] )
+      -| ['compiler_generated'] )
+end
