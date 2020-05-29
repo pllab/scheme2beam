@@ -1,1 +1,1 @@
-(lambda (x y) x)
+(define id ((lambda (x) x) "hey!"))

@@ -9,9 +9,9 @@ let load_scm_file env filepath =
     match s with
     | [] -> ()
     | h::t -> let (env', expr') =  Sparse.parse env h in
-              let mod = Filename.basename filepath in
-              let core = Module(mod, Gencerl.get_func_descr expr', [], [expr'])
-              let erl = Gencerl.start_gen_cerl core in 
+              (*let mod = Filename.basename filepath in
+              let core = Module(mod, Gencerl.func_names_from_binding expr', [], [expr'])*)
+              let erl = Gencerl.start_gen_cerl expr' in 
               print_string erl
   in 
   (* (\* Change the current working directory.
