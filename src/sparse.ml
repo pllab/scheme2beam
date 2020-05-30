@@ -109,7 +109,7 @@ parse_func(e: Cenv.env) (name: string) (args: Sexp.t) (body: Sexp.t) : (env * ce
   in
   let a = aux args
   in if name = ""
-     then (e', Fun("_@c" ^ (Int64.to_string (fresh_l())),
+     then (e', Fun("_@" ^ (Int64.to_string (fresh_l())),
                   List.length a,
                   a,
                   b'))
