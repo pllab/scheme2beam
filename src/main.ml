@@ -22,18 +22,24 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
   let sexps = Sexp.load_sexps filepath in
 
   (* returns list of strings, each string is a function *)
-  let rec aux s = 
+  let rec aux s env_local = 
     match s with
-    | [] -> []
-    | h::t -> let (env', expr') =  Sparse.parse env h in
-              let erlmod = Filename.basename filepath in
-              [Module(erlmod, func_names_from_binding env', [], [expr'])]
+    | [] -> ([], env_local)
+    | h::t -> let (env', expr') = (Sparse.parse env_local h)
+	      in let (tail, env'') = aux t env'
+		 in (expr' :: tail, env'')
   in 
-  let instr = aux sexps
-  in 
+  let (instrs, env_final) = aux sexps env
+  in
+
+  (* module boilerplate *)
+  let erlmod = Filename.basename filepath in
+  let prog = [Module(erlmod, func_names_from_binding env_final, [], instrs)]
+  in
+  
   if out != ""
-  then dump2file instr out
-  else let outstr = List.fold_right (fun line acc -> acc ^ "\n" ^ (start_gen_cerl line)) instr "" in
+  then dump2file prog out
+  else let outstr = List.fold_right (fun line acc -> acc ^ "\n" ^ (start_gen_cerl line)) prog "" in
   print_string outstr
    
 
