@@ -1,0 +1,63 @@
+module 'id2' ['id'/0,
+	      'module_info'/0,
+	      'module_info'/1,
+	      'run'/0]
+    attributes [%% Line 1
+		'file' =
+		    %% Line 1
+		    [{[105|[100|[50|[46|[101|[114|[108]]]]]]],1}],
+		%% Line 2
+		'compile' =
+		    %% Line 2
+		    ['export_all']]
+'id'/0 =
+    %% Line 4
+    fun () ->
+	%% Line 5
+	receive
+	  <{X,R}> when 'true' ->
+	      do  %% Line 6
+		  call 'erlang':'!'
+		      (R, X)
+		  %% Line 7
+		  apply 'id'/0
+		      ()
+	after 'infinity' ->
+	  'true'
+'run'/0 =
+    %% Line 10
+    fun () ->
+	let <A> =
+	    call %% Line 11
+		 'erlang':%% Line 11
+			  'spawn'
+		(%% Line 11
+		 'id2', %% Line 11
+			'id', %% Line 11
+			      [])
+	in  let <_1> =
+		fun () ->
+		    %% Line 12
+		    receive
+		      <X> when 'true' ->
+			  call 'io':'format'
+			      ([126|[112]], [X|[]])
+		    after 'infinity' ->
+		      'true'
+	    in  let <B> =
+		    call %% Line 12
+			 'erlang':%% Line 12
+				  'spawn'
+			(_1)
+		in  %% Line 14
+		    call 'erlang':'!'
+			(A, {[104|[101|[121]]],B})
+'module_info'/0 =
+    fun () ->
+	call 'erlang':'get_module_info'
+	    ('id2')
+'module_info'/1 =
+    fun (_0) ->
+	call 'erlang':'get_module_info'
+	    ('id2', _0)
+end

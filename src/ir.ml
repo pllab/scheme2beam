@@ -16,7 +16,7 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
    *)		     
   | Var(v) -> e, Var(v)
   | Fun(name, arity, args, body) ->
-          (* [[λxM]]a := νa !a(xr).[[M]]brb | [] *)
+          (* [[λxM]]a := νa !a(xr).[[M]]br_b | [] *)
           let x = match args with
                   | [] -> Var("X")
                   | Var(v) :: rest_args -> Var(v)
@@ -34,10 +34,19 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
                   Atom("infinity"), Atom("true"))
           in
           (e', Fun(name, arity, [], recv))
-   | _ -> raise NonMilnerizableError
+  | Apply(fname, arity, arg) ->
+          (* [[MN]]a := νr [[M]]b[[N]]cb_cr | r(a).[] *)
+          (* in core erlang:
+           * let <Lhs> = spawn fname in
+           * let <Recv> = fun () -> receive X -> X end in 
+           * let Rhs = spawn Recv in 
+           * call ! (Lhs, Tuple(arg, Rhs))
+           *)
+          e, Atom("ok")
+
+  | _ -> raise NonMilnerizableError
 (*
   | Let(args, assignment, body) -> (* abstraction *)
-  | Apply(name, arity, value_list) -> (* application *)
 *)
 	 
        
