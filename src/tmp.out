@@ -1,0 +1,17 @@
+
+module 'define_test4.scm' ['myfunc'/1,'x'/0]
+  attributes []
+'myfunc'/1 =
+  fun (n) ->
+    case <> of 
+      <> when 'false' ->
+        4
+      <> when 'true' ->
+        5
+    end
+
+'x'/0 =
+  fun () ->
+    4
+end
+

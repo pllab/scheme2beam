@@ -32,7 +32,6 @@ let rec parse(e: Cenv.env) (s: Sexp.t): (Cenv.env * Cerl.cexp) =
   | Sexp.List(Sexp.Atom("if") :: guard :: true_branch :: false_branch :: []) ->
      let e', expr' = parse_cond e guard true_branch false_branch in e', expr'
 
-  (* todo need to somehow check for recursive calls *)
   | Sexp.List(Sexp.Atom("let") :: arg_map :: body :: []) ->
      let e', expr' = parse_let e arg_map body in e', expr'
      
@@ -58,7 +57,10 @@ let rec parse(e: Cenv.env) (s: Sexp.t): (Cenv.env * Cerl.cexp) =
         | environ, Fun(name, arity, args, body) -> environ, name, arity   (* parsed into a lambda *)
         | _ -> raise (ParserError ("Got stuck on: " ^ Sexp.to_string s)))
      in
-     (* todo each one of these could change the env... how to deal with *)
+     
+     (* todo each one of these could change the env... 
+	replace map with just a match recursion to thread each new env through 
+      *)
       let value_list = List.map (fun x -> let env', expr' = parse e' x in expr') values
       in e', Apply(n, arity, value_list)
   | _ -> raise (ParserError ("Global stuck: " ^ Sexp.to_string s ))
@@ -71,11 +73,13 @@ and
     | Sexp.List(Sexp.Atom(h) :: []) -> (h, [])
     | Sexp.List(Sexp.Atom(h) :: t) -> (h, List.map (fun x -> let env', expr' = parse e x in expr') t)
   in
-  let env' = Cenv.add name (Fun(name, List.length args, args, Values([]))) e  (* add func here with empty body to avoid recursion problem *)
+  (* add func here with empty body to avoid recursion problem *)
+  let env' = Cenv.add name (Fun(name, List.length args, args, Values([]))) e  
   in
   let env'', b = parse env' body
   in
-  let env''' = Cenv.add name (Fun(name, List.length args, args, b)) env''   (* update here with body filled in *)
+  (* update here with body filled in *)
+  let env''' = Cenv.add name (Fun(name, List.length args, args, b)) env''
   in
   (env''', Fun(name, List.length args, args, b))
 and
@@ -134,23 +138,24 @@ parse_let(e: Cenv.env) (arg_map: Sexp.t) (body: Sexp.t) : (Cenv.env * cexp) =
    let arg_list = parse_args e arg_map in
      let e', b' = parse e body in
      
-     (* todo right now just pull out the first mapping *)
+     (* todo right now we just pull out the first mapping *)
      let (a,e) = match arg_list with
-       | [] -> (Values([]), Values([]))  (* todo also need to do this better *)
+       | [] -> (Values([]), Values([]))
        | (expr, value)::t -> (expr, value) (* :: aux t *)
      in
      (e',
-      Let(Values([a]),  (* todo assuming a is a Var... *)
+      (* todo assuming a is a Var *)
+      Let(Values([a]),  
           e,
           b'))
 and
 
-(* todo would this use the env if we used it at all? *)
+
 parse_args(e: Cenv.env) (s: Sexp.t) : (Cerl.cexp * Cerl.cexp) list =
   match s with
   | Sexp.List([]) -> []
 
-  (* the atom here has to be a var though... *)
+  (* the atom here has to be a var though *)
   | Sexp.List(Sexp.List(x :: value :: []) :: []) ->
      let e', k = parse e x in
      let e'', v = parse e' value in

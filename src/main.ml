@@ -22,6 +22,12 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
   let sexps = Sexp.load_sexps filepath in
 
   (* returns list of strings, each string is a function *)
+  (* this operates on a "per function level", the sexp that gets read in will, 
+     by tradition in scheme, just be a lambda, or a function;
+     the sexps are in a list, so we process the head, then pass the new environment to a call
+     that processes the tail, recursively, again keeping track of the possibly modified 
+     environment, which is how we read out the function names for the module boilerplate below.
+   *)
   let rec aux s env_local = 
     match s with
     | [] -> ([], env_local)
@@ -32,6 +38,17 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
   let (instrs, env_final) = aux sexps env
   in
 
+
+  (* IR pass*)
+  (* we might need access to functions outside the one we were parsing above, *)
+  (* so we should probably just do a second pass over the cexps here for the IR pass ;
+     this should result in another list of cexps, only with a bunch of send/recvs;
+     unsure how the environment plays into all this, but we will probably need
+     to have a new one, or store some stuff in it
+   *)
+  (* let milnerized = List.map (fun func -> Ir.milnerize func env_final) instrs *)
+  (* in  *)
+  
   (* module boilerplate *)
   let erlmod = Filename.basename filepath in
   let prog = [Module(erlmod, func_names_from_binding env_final, [], instrs)]
