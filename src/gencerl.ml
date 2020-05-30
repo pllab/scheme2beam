@@ -44,10 +44,7 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
                 (gen_cerl body (tabs ^ tab))
 
     | Fun(name, arity, vars, body) ->
-            Printf.sprintf "'%s'/%d =\n%sfun (%s) ->\n%s%s\n"
-                name
-                arity
-                tabs
+            Printf.sprintf "fun (%s) ->\n%s%s\n"
                 (String.concat ","
                     (List.map2 gen_cerl vars
                         (List.init (List.length vars) (fun x -> tabs))))
@@ -84,6 +81,10 @@ let rec gen_cerl (e : cexp) (tabs : string) : string =
             Printf.sprintf "%s = %s"
                 (gen_cerl k tabs)
                 (gen_cerl t tabs)
+    | Definition(name, func) ->
+            Printf.sprintf "%s = %s"
+                (gen_cerl name tabs)
+                (gen_cerl func tabs)
 
     | Primop(name, args) ->
             Printf.sprintf "primop '%s'(%s)"

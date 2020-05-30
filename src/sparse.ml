@@ -81,7 +81,7 @@ and
   (* update here with body filled in *)
   let env''' = Cenv.add name (Fun(name, List.length args, args, b)) env''
   in
-  (env''', Fun(name, List.length args, args, b))
+  (env''', Definition(Export(name, List.length args),Fun(name, List.length args, args, b)))
 and
       
   parse_atom(e: env) (s : string) : (env * Cerl.cexp) =
@@ -113,10 +113,20 @@ parse_func(e: Cenv.env) (name: string) (args: Sexp.t) (body: Sexp.t) : (env * ce
   in
   let a = aux args
   in if name = ""
-     then (e', Fun("_@" ^ (Int64.to_string (fresh_l())),
-                  List.length a,
-                  a,
-                  b'))
+     then 
+     let anon_name ="_@" ^ (Int64.to_string (fresh_l())) 
+     in (e', Fun(anon_name,
+                 List.length a,
+                 a,
+                 b'))
+     (* think we should break lambda functions in core erlang Lets, 
+      * like let <_@anon> = fun (LAMBDA ARGS) -> LAMBDA BODY in APPLICATION of LAMBDA.
+      * But not sure how to pass in the body for the Let here. *)
+     (*in (e', Let(Values([Var(anon_name)]),
+                   Fun(anon_name,
+                       List.length a,
+                       a,
+                       b'), )*)
      else
        (e', Fun(name,
                   List.length a,

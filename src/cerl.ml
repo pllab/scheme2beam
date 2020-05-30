@@ -40,6 +40,7 @@ type cexp =
     (* Module helpers *)
     | Export of string * int
     | Attribute of cexp * cexp
+    | Definition of cexp * cexp
 
     | Primop of string * cexp list
     | Receive of cexp list * cexp * cexp (* Clauses, Timeout, Action *)

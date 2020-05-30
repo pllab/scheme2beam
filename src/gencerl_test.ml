@@ -121,7 +121,7 @@ let () =
                     (Module("my_factorial", 
                         [Export("factorial",1); Export("module_info", 0); Export("module_info", 1)],
                         [],
-                        [Fun("factorial",
+                        [Definition(Export("factorial",1), Fun("factorial",
                             1,
                             [Var("_0")],
                             Case(Var("_0"),
@@ -134,13 +134,10 @@ let () =
                                         Call("erlang","-",[Var("N"); Int(1)]),
                                         Let(Values([Var("_2")]), 
                                             Apply("factorial",1,[Var("_1")]),
-                                            Call("erlang","*",[Var("N"); Var("_2")]))))]));
-                        Fun("module_info", 0,
-                            [],
-                            Call("erlang", "get_module_info", [Atom("my_factorial")]));
-                        Fun("module_info", 1,
+                                            Call("erlang","*",[Var("N"); Var("_2")]))))])));
+                        Definition(Export("module_info", 1), Fun("module_info", 1,
                             [Var("_0")],
-                            Call("erlang", "get_module_info", [Atom("my_factorial"); Var("_0")]));
+                            Call("erlang", "get_module_info", [Atom("my_factorial"); Var("_0")])));
                         ]))
     in
     print_endline "factorial module:";

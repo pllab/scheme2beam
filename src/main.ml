@@ -54,9 +54,10 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
   let prog = [Module(erlmod, func_names_from_binding env_final, [], instrs)]
   in
   
-  if out != ""
+  (*if out != ""
   then dump2file prog out
-  else let outstr = List.fold_right (fun line acc -> acc ^ "\n" ^ (start_gen_cerl line)) prog "" in
+  else *)
+      let outstr = List.fold_right (fun line acc -> acc ^ "\n" ^ (start_gen_cerl line)) prog "" in
   print_string outstr
    
 
