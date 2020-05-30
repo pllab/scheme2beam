@@ -7,7 +7,7 @@ type environment = Cerl.cexp Ctx.t
 
 type env = {
     parent : env option;  (* Parent frame of this environment. *)
-    bindings : environment; (* map from cexps to cexps *)
+    bindings : environment; (* map from strings to cexps  *)
 }
 
 let make_env parent_env =

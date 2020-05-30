@@ -1,49 +1,56 @@
 
+open Printf
 open Sexplib
-open Sparse
-open Gencerl
 
-let load_scm_file env filepath =
+open Cenv
+open Cerl
+open Gencerl
+open Sparse
+
+(* todo this doesn't go through parent contexts yet *)
+let func_names_from_binding (e: Cenv.env) : cexp list =
+  let env_bindings = e.bindings in
+  let map_bindings = Ctx.bindings env_bindings in
+  List.map
+  (fun pr -> 
+    (match (snd pr) with
+     | Fun(nn,ar,l1,ex) -> Export((fst pr), ar)))
+   map_bindings
+
+
+let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
   let sexps = Sexp.load_sexps filepath in
+
+  (* returns list of strings, each string is a function *)
   let rec aux s = 
     match s with
-    | [] -> ()
+    | [] -> []
     | h::t -> let (env', expr') =  Sparse.parse env h in
-              let mod = Filename.basename filepath in
-              let core = Module(mod, Gencerl.get_func_descr expr', [], [expr'])
-              let erl = Gencerl.start_gen_cerl core in 
-              print_string erl
+              let erlmod = Filename.basename filepath in
+              [Module(erlmod, func_names_from_binding env', [], [expr'])]
   in 
-  (* (\* Change the current working directory.
-   *  * Important for (load ...) when a relative path is given. *\)
-   * let original_cwd = Sys.getcwd () in
-   * Sys.chdir (Filename.dirname filepath); *)
-
-  aux sexps
+  let instr = aux sexps
+  in 
+  if out != ""
+  then dump2file instr out
+  else let outstr = List.fold_right (fun line acc -> acc ^ "\n" ^ (start_gen_cerl line)) instr "" in
+  print_string outstr
    
-(*   (\* Restore the current working directory. *\)
- *   Sys.chdir original_cwd
- * (\* WARN: catch errors and close file properly. *\) *)
 
 let primitive_env() : Cenv.env =
   (* Create an empty environment. *)
     let root_env = Cenv.make_env None in    
-    (* (\* Load primitives implemented in OCaml. *\)
-     * Primitives.load_primitives root_env; *)
-    (* (\* Load primitives implemented in Scheme. *\)
-     * load_scm_file
-     *     root_env
-     *     (Filename.concat (Filename.dirname Sys.executable_name)
-     *     "src-scheme/primitives.scm"); *)
     root_env
 
 let () =
   match Sys.argv with
   | [|_; "-h"|] | [|_; "--help"|] ->
-     let usage = "usage: ./s2b [filename] [-h | --help]" in
+     let usage = "usage: ./s2b [filename] [-h | --help | -o outfilename]" in
      print_endline usage
   | [|_; path|] -> let env = primitive_env () in 
-                   load_scm_file env path
+		   load_scm_file ~environment:env ~fpath:path ~outfile:""
+  | [|_; path; out|] -> let env = primitive_env () in
+			 load_scm_file ~environment:env ~fpath:path ~outfile:out
   | _ ->
      prerr_endline "Invalid arguments provided.";
      exit 1
