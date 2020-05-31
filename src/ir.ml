@@ -86,7 +86,9 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
                   recv)
           in
           e, lhs
-
+	       
+  | Definition(c1,c2) -> let env', mil = milnerize e c2 in env', Definition(c1, mil)
+     
   | _ -> raise NonMilnerizableError
 (*
   | Let(args, assignment, body) -> (* abstraction *)

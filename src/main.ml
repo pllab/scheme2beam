@@ -5,6 +5,7 @@ open Sexplib
 open Cenv
 open Cerl
 open Gencerl
+open Ir
 open Sparse
 
 (* todo this doesn't go through parent contexts yet *)
@@ -46,19 +47,22 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
      unsure how the environment plays into all this, but we will probably need
      to have a new one, or store some stuff in it
    *)
-  (* let milnerized = List.map (fun func -> Ir.milnerize func env_final) instrs *)
-  (* in  *)
+  (* milnerize "func" is a Definition *)
+    
+  
+  let milnerized = List.map (fun func -> snd (Ir.milnerize env_final func)) instrs
+  in
   
   (* module boilerplate *)
   let erlmod = Filename.basename filepath in
-  let prog = [Module(erlmod, func_names_from_binding env_final, [], instrs)]
+  let prog = [Module(erlmod, func_names_from_binding env_final, [], milnerized)]
   in
   
-  (*if out != ""
-  then dump2file prog out
-  else *)
-      let outstr = List.fold_right (fun line acc -> acc ^ "\n" ^ (start_gen_cerl line)) prog "" in
-  print_string outstr
+  (* if out != "" *)
+  (* then dump2file prog out *)
+  (* else *)
+    let outstr = List.fold_right (fun line acc -> acc ^ "\n" ^ (start_gen_cerl line)) prog "" in
+    print_string outstr
    
 
 let primitive_env() : Cenv.env =
