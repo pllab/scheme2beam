@@ -35,13 +35,16 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
               Receive(
                   [Clause(Values([x; Var("R")]),
                     Atom("true"),
-                    Seq(Call("erlang", "!", [Var("R"); m]), 
+                    Seq(Call("erlang", "!", [Var("R"); Var("M")]),
                         Apply(name, arity, []))
                   )], 
                   (* Receive boilerplate for timeout *)
                   Atom("infinity"), Atom("true"))
           in
-          (e', Fun(name, arity, [], recv))
+	  let toplevel = Let(Values([Var("M")]),m,recv)
+	  in
+          (e', Fun(name, arity, [], toplevel))
+	    
   | Apply(fname, arity, args) ->
           (* [[MN]]a := νr [[M]]b[[N]]cb_cr | r(a).[] *)
           (* in core erlang:

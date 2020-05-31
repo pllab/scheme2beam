@@ -140,19 +140,21 @@ complicated scheme into Core Erlang.
 
 ### TODO
 
-1. [ ] "IR pass" to take an Apply to the above racket
+1. [x] "IR pass" to take an Apply to the above racket
    - focus on identity (since that's all we've done)
    - above "algorithm", dismantle Apply to fill in above
-   - done by Sunday, May 31
-   - tracing for great good (visualizations)
 
-2. [ ] general eval function to get beyond id
-   - arithmetic
-   - done by June 8
+2. [ ] still need to figure out the translation for functions beyond id,
+   important because the toplevel "run/main/start" is not an
+   identity function
+   - more specifically:
+     1. extra let at the toplevel of e.g. id
+     2. not printing func args
+     3. receive (also in id) should be taking a <{a,b}>
+     4. spawn possibly needs module name, but probably needs args, "[]"
+     5. ir.ml possibly arity mis-copy
 
-3. [ ] multiple/nested functions
-   - pretty traces
-   - ?
-
-4. [ ] write paper 
-
+3. [ ] presentation
+   - meet Tuesday ~2 hours in the afternoon, then maybe again?
+     to just hash out our 10min pres
+   - after 6pm

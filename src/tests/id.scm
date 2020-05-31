@@ -1,3 +1,4 @@
 (define (id x) x)
-(define (main) (id "hey"))
+(define (run) (id "hey"))
+;; (id"hey")
 

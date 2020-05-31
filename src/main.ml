@@ -48,10 +48,11 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
      to have a new one, or store some stuff in it
    *)
   (* milnerize "func" is a Definition *)
-    
-  
   let milnerized = List.map (fun func -> snd (Ir.milnerize env_final func)) instrs
   in
+
+  (* (\* final main routine to call everything *\) *)
+  (* [Fun("start", 0,  ; milnerized] *)
   
   (* module boilerplate *)
   let erlmod = Filename.basename filepath in

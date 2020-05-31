@@ -1,0 +1,41 @@
+module 'id.scm' ['id'/1,'run'/0]
+  attributes []
+'id'/1 = fun () ->
+    let <M> =
+      X
+    in
+      receive
+        <x,R> when 'true' ->
+          do
+          call 'erlang':'!'(R,M)
+          apply 'id'/1()
+        after 'infinity' ->
+          'true'
+
+'run'/0 = fun () ->
+    let <M> =
+      let <Lhs_id> =
+        call 'erlang':'spawn'('id')
+      in
+        let <_recv@1> =
+          fun () ->
+            receive
+              <X> when 'true' ->
+                X
+              after 'infinity' ->
+                'true'
+
+        in
+          let <Rhs_id> =
+            call 'erlang':'spawn'(_recv@1)
+          in
+            call 'erlang':'!'(Lhs_id,{hey,Rhs_id})
+    in
+      receive
+        <X,R> when 'true' ->
+          do
+          call 'erlang':'!'(R,M)
+          apply 'run'/0()
+        after 'infinity' ->
+          'true'
+end
