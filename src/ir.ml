@@ -11,6 +11,14 @@ let fresh_l () : int64 = begin
     ! next_l
     end
 
+let rec subst (x : string) (a : cexp) : cexp =
+    let () = print_endline x in
+    match a with
+    | Var(v) -> Var(x)
+    | Apply(f,n,a) -> Apply(f,n,a)
+    | Let(f,n,a) -> Let(f,n,a)
+    | _ -> raise NonMilnerizableError
+
 let rec milnerize (e: env) (expr: cexp) : (env * cexp) =       
   match expr with
   (*
@@ -24,24 +32,28 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
   | Var(v) -> e, Var(v)
   | Fun(name, _, args, body) ->
           (* [[λxM]]a := νa !a(xr).[[M]]br_b | [] *)
+          let () = print_endline name in
           let x = match args with
                   | [] -> Var("X")
-                  | Var(v) :: rest_args -> Var(v)
+                  | Var(v) :: rest_args -> Var("X_" ^ v ^ (Int64.to_string (fresh_l())))
           in
-          let e', m = milnerize e body (* this should be the "eval" *)
+          let m = match x with
+                  | Var(x_name) -> subst x_name body 
+                  | _ -> raise NonMilnerizableError
           in
-          let recv = 
-              Receive(
-                  [Clause(Values(Tuple([x; Var("R")])),
+          let e', body' = match body with
+            | Var(_) -> 
+                e, Receive(
+                  [Clause(Values([Tuple([x; Var("R")])]),
                     Atom("true"),
-                    Seq(Call("erlang", "!", [Var("R"); Var("M")]),
+                    Seq(Call("erlang", "!", [Var("R"); m]),
                         Apply(name, 0, []))
                   )], 
                   Atom("infinity"), Atom("true"))
+            | Apply(_,_,_) -> milnerize e body
+            | _ -> raise NonMilnerizableError
           in
-	  let toplevel = Let(Values([Var("M")]),m,recv)
-	  in
-          (e', Fun(name, 0, [], toplevel))
+          (e', Fun(name, 0, [], body'))
 	    
   | Apply(fname, _, args) ->
           (* [[MN]]a := νr [[M]]b[[N]]cb_cr | r(a).[] *)

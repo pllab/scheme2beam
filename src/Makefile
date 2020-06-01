@@ -30,7 +30,7 @@ cenv.cmo: cenv.ml cerl.ml gencerl.ml
 sparse.cmo: cerl.ml cenv.ml sparse.ml
 	ocamlfind ocamlc -linkpkg -package sexplib cerl.ml cenv.ml sparse.ml -o sparse
 
-ir_test: cerl.ml cenv.ml gencerl.ml ir.ml ir_test.ml
+ir_test: cerl.ml gencerl.ml cenv.ml ir.ml ir_test.ml
 	ocamlc -o ir_test $^
 
 .PHONY: test

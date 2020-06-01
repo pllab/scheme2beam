@@ -1,0 +1,30 @@
+module 'end2end' ['id'/0,'run'/0]
+  attributes []
+'id'/0 = fun () ->
+    receive
+      <{X_x1,R}> when 'true' ->
+        do
+        call 'erlang':'!'(R,X_x1)
+        apply 'id'/0()
+      after 'infinity' ->
+        'true'
+
+'run'/0 = fun () ->
+    let <Lhs_id> =
+      call 'erlang':'spawn'('end2end','id',[])
+    in
+      let <_recv@2> =
+        fun () ->
+          receive
+            <X> when 'true' ->
+              X
+            after 'infinity' ->
+              'true'
+
+      in
+        let <Rhs_id> =
+          call 'erlang':'spawn'(_recv@2)
+        in
+          call 'erlang':'!'(Lhs_id,{'hey',Rhs_id})
+end
+
