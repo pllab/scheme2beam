@@ -19,6 +19,12 @@ let func_names_from_binding (e: Cenv.env) : cexp list =
      | Fun(nn,ar,l1,ex) -> Export((fst pr), ar)))
    map_bindings
 
+let rec func_names_from_funcs (e: cexp list) : cexp list =
+  match e with
+  | [] -> []
+  | f::funcs -> match f with
+                | Definition(e, d) -> e :: func_names_from_funcs funcs
+                | _ -> func_names_from_funcs funcs
 
 let load_scm_file ~environment:env ~fpath:filepath ~milneropt:milner =
   let sexps = Sexp.load_sexps filepath in
@@ -54,9 +60,10 @@ let load_scm_file ~environment:env ~fpath:filepath ~milneropt:milner =
   in
   let mil_env = Cenv.add "module:name" (Module(erlmod, [], [], [])) env_final
   in
-  let milnerized = if milner then 
-                   List.map (fun func -> snd (Ir.milnerize mil_env func)) instrs
-                   else instrs
+  let milnerized = 
+      if milner
+      then List.map (fun func -> snd (Ir.milnerize mil_env func)) instrs
+      else instrs
   in
 
   (* (\* final main routine to call everything *\) *)
@@ -64,7 +71,7 @@ let load_scm_file ~environment:env ~fpath:filepath ~milneropt:milner =
   
   (* module boilerplate *)
   (* extract filename without .scm extension *)
-  let prog = [Module(erlmod, func_names_from_binding env_final, [], milnerized)]
+  let prog = [Module(erlmod, func_names_from_funcs milnerized, [], milnerized)]
   in
   
   (* if out != "" *)

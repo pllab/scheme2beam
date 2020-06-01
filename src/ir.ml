@@ -57,7 +57,9 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
             | Apply(_,_,_) -> milnerize e body
             | _ -> raise NonMilnerizableError
           in
-          (e', Fun(name, 0, [], body'))
+          let func = Fun(name, 0, [], body')
+          in
+          (Cenv.add name func e'), func
 	    
   | Apply(fname, _, args) ->
           (* [[MN]]a := νr [[M]]b[[N]]cb_cr | r(a).[] *)
