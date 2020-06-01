@@ -30,8 +30,9 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
      church encodings in examples/scheme 
    *)		     
   (* FIX:
-     1. Atoms aren't being quoted in tuples for some reason
+     1. Atoms aren't being quoted in tuples for some reason (or Scheme strings aren't being parsed correctly)
      2. Module boilerplate in main needs to be updated
+     3. Add a command line arg for Milnerizing 
    *)
   | Var(v) -> e, Var(v)
   | Fun(name, _, args, body) ->
