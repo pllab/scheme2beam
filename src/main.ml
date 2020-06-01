@@ -20,7 +20,7 @@ let func_names_from_binding (e: Cenv.env) : cexp list =
    map_bindings
 
 
-let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
+let load_scm_file ~environment:env ~fpath:filepath ~milneropt:milner =
   let sexps = Sexp.load_sexps filepath in
 
   (* returns list of strings, each string is a function *)
@@ -54,7 +54,9 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
   in
   let mil_env = Cenv.add "module:name" (Module(erlmod, [], [], [])) env_final
   in
-  let milnerized = List.map (fun func -> snd (Ir.milnerize mil_env func)) instrs
+  let milnerized = if milner then 
+                   List.map (fun func -> snd (Ir.milnerize mil_env func)) instrs
+                   else instrs
   in
 
   (* (\* final main routine to call everything *\) *)
@@ -80,12 +82,12 @@ let primitive_env() : Cenv.env =
 let () =
   match Sys.argv with
   | [|_; "-h"|] | [|_; "--help"|] ->
-     let usage = "usage: ./s2b [filename] [-h | --help | -o outfilename]" in
+     let usage = "usage: ./s2b [filename] [-h | --help | -m ]" in
      print_endline usage
   | [|_; path|] -> let env = primitive_env () in 
-		   load_scm_file ~environment:env ~fpath:path ~outfile:""
-  | [|_; path; out|] -> let env = primitive_env () in
-			 load_scm_file ~environment:env ~fpath:path ~outfile:out
+		   load_scm_file ~environment:env ~fpath:path ~milneropt:false
+  | [|_; path; "-m"|] -> let env = primitive_env () in
+			 load_scm_file ~environment:env ~fpath:path ~milneropt:true
   | _ ->
      prerr_endline "Invalid arguments provided.";
      exit 1
