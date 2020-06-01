@@ -29,6 +29,11 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
      I suspect we should only focus on strict lambda expressions, luckily we have some
      church encodings in examples/scheme 
    *)		     
+  (* FIX:
+   * 1. Fix the spawn call (need to get module name in there)
+     2. Atoms aren't being quoted in tuples for some reason
+     3. Module boilerplate in main needs to be updated
+   *)
   | Var(v) -> e, Var(v)
   | Fun(name, _, args, body) ->
           (* [[λxM]]a := νa !a(xr).[[M]]br_b | [] *)
@@ -94,7 +99,7 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
           let lhs = 
               Let(
                   Values([Var(lhs_var)]),
-                  Call("erlang", "spawn", [Atom(fname)]),
+                  Call("erlang", "spawn", [Atom(fname)]), (*XXX*)
                   recv)
           in
           e, lhs

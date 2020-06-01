@@ -1,6 +1,7 @@
 
 open Printf
 open Sexplib
+open String
 
 open Cenv
 open Cerl
@@ -55,7 +56,8 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
   (* [Fun("start", 0,  ; milnerized] *)
   
   (* module boilerplate *)
-  let erlmod = Filename.basename filepath in
+  (* extract filename without .scm extension *)
+  let erlmod = List.nth (String.split_on_char '.' (Filename.basename filepath)) 0 in
   let prog = [Module(erlmod, func_names_from_binding env_final, [], milnerized)]
   in
   
