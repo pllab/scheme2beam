@@ -11,7 +11,6 @@ let fresh_l () : int64 = begin
     ! next_l
     end
 
-
 let rec milnerize (e: env) (expr: cexp) : (env * cexp) =       
   match expr with
   (*
@@ -33,12 +32,11 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
           in
           let recv = 
               Receive(
-                  [Clause(Values([x; Var("R")]),
+                  [Clause(Values(Tuple([x; Var("R")])),
                     Atom("true"),
                     Seq(Call("erlang", "!", [Var("R"); Var("M")]),
                         Apply(name, 0, []))
                   )], 
-                  (* Receive boilerplate for timeout *)
                   Atom("infinity"), Atom("true"))
           in
 	  let toplevel = Let(Values([Var("M")]),m,recv)
@@ -78,7 +76,6 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
                         Atom("true"),
                         Var("X")
                       )], 
-                      (* Receive boilerplate for timeout *)
                       Atom("infinity"), Atom("true"))),
                   rhs)
           in 
