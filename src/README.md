@@ -148,10 +148,10 @@ complicated scheme into Core Erlang.
    important because the toplevel "run/main/start" is not an
    identity function
    - more specifically:
-     1. extra let at the toplevel of e.g. id
+     1. X extra let at the toplevel of e.g. id
      2. X not printing func args 
      3. X receive (also in id) should be taking a <{a,b}>
-     4. spawn possibly needs module name, but probably needs args, "[]"
+     4. X spawn possibly needs module name, but probably needs args, "[]"
      5. X ir.ml possibly arity mis-copy
 
 3. [ ] presentation

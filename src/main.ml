@@ -49,7 +49,12 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
      to have a new one, or store some stuff in it
    *)
   (* milnerize "func" is a Definition *)
-  let milnerized = List.map (fun func -> snd (Ir.milnerize env_final func)) instrs
+
+  let erlmod = List.nth (String.split_on_char '.' (Filename.basename filepath)) 0
+  in
+  let mil_env = Cenv.add "module:name" (Module(erlmod, [], [], [])) env_final
+  in
+  let milnerized = List.map (fun func -> snd (Ir.milnerize mil_env func)) instrs
   in
 
   (* (\* final main routine to call everything *\) *)
@@ -57,7 +62,6 @@ let load_scm_file ~environment:env ~fpath:filepath ?outfile:(out="") =
   
   (* module boilerplate *)
   (* extract filename without .scm extension *)
-  let erlmod = List.nth (String.split_on_char '.' (Filename.basename filepath)) 0 in
   let prog = [Module(erlmod, func_names_from_binding env_final, [], milnerized)]
   in
   

@@ -3,6 +3,7 @@ open Cerl
 open Cenv
 
 exception NonMilnerizableError
+exception EnvironmentError of string
 
 (* for generating anonymous function names *) 
 let next_l : int64 ref = ref Int64.zero
@@ -12,7 +13,6 @@ let fresh_l () : int64 = begin
     end
 
 let rec subst (x : string) (a : cexp) : cexp =
-    let () = print_endline x in
     match a with
     | Var(v) -> Var(x)
     | Apply(f,n,a) -> Apply(f,n,a)
@@ -30,14 +30,12 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
      church encodings in examples/scheme 
    *)		     
   (* FIX:
-   * 1. Fix the spawn call (need to get module name in there)
-     2. Atoms aren't being quoted in tuples for some reason
-     3. Module boilerplate in main needs to be updated
+     1. Atoms aren't being quoted in tuples for some reason
+     2. Module boilerplate in main needs to be updated
    *)
   | Var(v) -> e, Var(v)
   | Fun(name, _, args, body) ->
           (* [[λxM]]a := νa !a(xr).[[M]]br_b | [] *)
-          let () = print_endline name in
           let x = match args with
                   | [] -> Var("X")
                   | Var(v) :: rest_args -> Var("X_" ^ v ^ (Int64.to_string (fresh_l())))
@@ -96,10 +94,15 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
                       Atom("infinity"), Atom("true"))),
                   rhs)
           in 
+          let module_name = 
+              match (Cenv.lookup "module:name" e) with
+              | Module(name, _, _, _) -> name
+              | _ -> raise (EnvironmentError ("module:name is not set!"))
+          in
           let lhs = 
               Let(
                   Values([Var(lhs_var)]),
-                  Call("erlang", "spawn", [Atom(fname)]), (*XXX*)
+                  Call("erlang", "spawn", [Atom(module_name); Atom(fname); Var("[]")]),
                   recv)
           in
           e, lhs
