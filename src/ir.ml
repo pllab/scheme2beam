@@ -23,7 +23,7 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
      church encodings in examples/scheme 
    *)		     
   | Var(v) -> e, Var(v)
-  | Fun(name, arity, args, body) ->
+  | Fun(name, _, args, body) ->
           (* [[λxM]]a := νa !a(xr).[[M]]br_b | [] *)
           let x = match args with
                   | [] -> Var("X")
@@ -36,16 +36,16 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
                   [Clause(Values([x; Var("R")]),
                     Atom("true"),
                     Seq(Call("erlang", "!", [Var("R"); Var("M")]),
-                        Apply(name, arity, []))
+                        Apply(name, 0, []))
                   )], 
                   (* Receive boilerplate for timeout *)
                   Atom("infinity"), Atom("true"))
           in
 	  let toplevel = Let(Values([Var("M")]),m,recv)
 	  in
-          (e', Fun(name, arity, [], toplevel))
+          (e', Fun(name, 0, [], toplevel))
 	    
-  | Apply(fname, arity, args) ->
+  | Apply(fname, _, args) ->
           (* [[MN]]a := νr [[M]]b[[N]]cb_cr | r(a).[] *)
           (* in core erlang:
            * let <Lhs> = spawn fname in
@@ -90,7 +90,13 @@ let rec milnerize (e: env) (expr: cexp) : (env * cexp) =
           in
           e, lhs
 	       
-  | Definition(c1,c2) -> let env', mil = milnerize e c2 in env', Definition(c1, mil)
+  | Export(name, _) -> e, Export(name, 0)
+  | Definition(exp, func) -> 
+          let env', mil_func = milnerize e func 
+          in
+          let env'', mil_exp = milnerize env' exp
+          in 
+          env'', Definition(mil_exp, mil_func)
      
   | _ -> raise NonMilnerizableError
 (*

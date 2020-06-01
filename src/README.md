@@ -149,10 +149,10 @@ complicated scheme into Core Erlang.
    identity function
    - more specifically:
      1. extra let at the toplevel of e.g. id
-     2. not printing func args
+     2. X not printing func args 
      3. receive (also in id) should be taking a <{a,b}>
      4. spawn possibly needs module name, but probably needs args, "[]"
-     5. ir.ml possibly arity mis-copy
+     5. X ir.ml possibly arity mis-copy
 
 3. [ ] presentation
    - meet Tuesday ~2 hours in the afternoon, then maybe again?
