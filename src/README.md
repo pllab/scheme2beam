@@ -1,7 +1,10 @@
 
 # How to Run
+
+If you don't already have Janestreet's Sexplib installed, you may run the
+following:
+
 ```
-# if you don't already have Janestreet's Sexplib installed
 $ opam install sexplib
 
 $ eval `opam config env`
@@ -9,19 +12,27 @@ $ make
 ```
 
 ## Main
-Assuming you're sitting in project root:
+
+Assuming you're sitting in project root, the following will compile a simple
+conditional expression into Core Erlang:
+
 ```
-$ ./s2b `pwd`/tests/if_test.scm
+$ ./s2b tests/if_test.scm
 ```
 
 ## Tests
+
+There are further tests about actually generating Core Erlang in:
+
 ```
 make gencerl_test
 ./gencerl_test
 ```
 
 ## Miscellaneous Notes about doing this in the Ocaml toplevel
+
 Alternatively, in an interactive shell (ensuring you've eval'ed the opam environment as above):
+
 ```
 # #use "topfind";;
 # #require "sexplib";;
@@ -32,7 +43,7 @@ Alternatively, in an interactive shell (ensuring you've eval'ed the opam environ
 # open Cenv;;
 # #load "sparse.cmo";;
 # open Sparse;;
-
+# ... and all other file dependencies ... 
 # #trace parse;;
 
 # let x = Sexp.of_string "(this)";;
@@ -48,14 +59,12 @@ Alternatively, in an interactive shell (ensuring you've eval'ed the opam environ
 
 ```
 
-```
-$ ocamlfind ocamlc -linkpkg -package sexplib pcf.ml parser.ml -o parser_example.byte
-```
-
 ## Example: running a generated Core Erlang module
 
-Let's say you generated some Core Erlang from the `gen_cerl` module and you want to run it. 
-As an example, you could run the `gen_cerl` test suite and grab the output of one of the unit tests for a module called `my_factorial` and paste that into a file called `my_factorial.core`.
+Let's say you generated some Core Erlang from the `gen_cerl` module and you want
+to run it.  As an example, you could run the `gen_cerl` test suite and grab the
+output of one of the unit tests for a module called `my_factorial` and paste
+that into a file called `my_factorial.core`.
 
 Then compile it to a BEAM bytecode:
 
@@ -88,73 +97,3 @@ $ erl -noshell -s map_test start -s init stop
 ```
 And there you go! That called our generated `my_factorial` module!
 
-
-## Milner's Translation
-
-### Pi Calculus in Erlang
-
-The translation by Vasconcelos and others more or less agree on how to translate
-the lambda calculus into pi calculus.  Having worked through translation on the
-identity function in Erlang to get a running version, the basic skeleton of
-evaluation appears fairly straightforward.  The code in `id.erl` essentially
-comprises this skeleton.
-
-The compiled `id.erl` to `id.core` is our target for translating our `cerl` IR
-into a concurrent/message passing version of the same code.
-
-### Algorithm Skeleton and Example
-
-```
-((define id(x) x) "hey")
-
-  |
-  v
-// internal
-id["id" -> Fun("id", 1, [Var("x")], Var("x"))] 
-
-Apply("id", 1, [Atom("hey")])
-
-  |
-  v
-
-Core Erlang
-```
-
-From the above picture, we would like to:
-
-1. spawn func and arg procs (A, B)
-   - A gets Apply's left value as its function
-   - B gets A.func_recv
-2. send Apply's right arg to A with B
-3. create the A and B functions
-   - B_recv we get for free, it just receives 
-     a single param representing final value
-   - A_func identical form in example
-
-4. which only leaves the eval function over an 
-   arbitrary cerl term
-
-We note that the eval function is the "missing piece" to compiling more
-complicated scheme into Core Erlang.
-
-
-### TODO
-
-1. [x] "IR pass" to take an Apply to the above racket
-   - focus on identity (since that's all we've done)
-   - above "algorithm", dismantle Apply to fill in above
-
-2. [ ] still need to figure out the translation for functions beyond id,
-   important because the toplevel "run/main/start" is not an
-   identity function
-   - more specifically:
-     1. X extra let at the toplevel of e.g. id
-     2. X not printing func args 
-     3. X receive (also in id) should be taking a <{a,b}>
-     4. X spawn possibly needs module name, but probably needs args, "[]"
-     5. X ir.ml possibly arity mis-copy
-
-3. [ ] presentation
-   - meet Tuesday ~2 hours in the afternoon, then maybe again?
-     to just hash out our 10min pres
-   - after 6pm
