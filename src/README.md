@@ -1,8 +1,8 @@
 
 # How to Run
 
-If you don't already have Janestreet's Sexplib installed, you may run the
-following:
+This guide assumes you have set up an `opam` repository.  And if you don't already
+have Janestreet's Sexplib installed, you may run the following:
 
 ```
 $ opam install sexplib
@@ -14,7 +14,8 @@ $ make
 ## Main
 
 Assuming you're sitting in project root, the following will compile a simple
-conditional expression into Core Erlang:
+conditional expression into Core Erlang.  More tests are listed in the `tests`
+directory.
 
 ```
 $ ./s2b tests/if_test.scm
@@ -31,7 +32,9 @@ make gencerl_test
 
 ## Miscellaneous Notes about doing this in the Ocaml toplevel
 
-Alternatively, in an interactive shell (ensuring you've eval'ed the opam environment as above):
+You may avoid using the Makefile and follow these directions for working within
+an Ocaml toplevel.  Alternatively, in an interactive shell (ensuring you've
+eval'ed the opam environment as above):
 
 ```
 # #use "topfind";;
