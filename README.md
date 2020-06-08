@@ -2,33 +2,51 @@
 
 ## Overview
 
-Overall we plan to compile a subset of the scheme language to the Erlang virtual machine, the BEAM.  We have chosen scheme
-because it is has a straightforward semantics, close to the lambda calculus, which will hopefully make porting it easier than
-a more fully featured language such as Java.
+This project is a source compiler that takes programs written in Scheme and compiles them to run on the Erlang VM, BEAM. 
 
-## Milestones
+## Depedencies
 
-  1. Write a few programs in Erlang and dump the bytecode
-     We will focus on very simple programs at first to get a feel for the bytecode.
-  2. Choose a language for the source compiler.
-     Examples exist using Rust, we've learned:
-     https://github.com/gleam-lang/gleam
-     But we may also choose either scheme or erlang itself.
-  3. Begin targeting a translation from scheme using Ocaml as the source compiler language.
-     This at the moment is largely research-oriented, as neither of us yet feel
-     confident we know how to proceed much pas this point.
-  4. ...
-  5. ...
-  6. ...
-  7. Hopefully we can add concurrency features.
-       Interesting approaches are here:
-       https://www.sciencedirect.com/science/article/pii/S030439750600555X
-       and
-       here:
-       https://arxiv.org/pdf/1312.2702.pdf
-       
-## Resources
+- Erlang
+- OCaml
+- Jane Street's sexplib (can install through `opam`)
 
-- [List of lots of other languages that run on the BEAM](https://github.com/llaisdy/beam_languages)
-- [The BEAM Book](https://blog.stenmans.org/theBeamBook/#_preface)
+## Building
+This guide assumes you have set up an `opam` repository.  And if you don't already
+have Janestreet's Sexplib installed, you may run the following:
+
+```
+$ opam install sexplib
+
+$ eval `opam config env`
+```
+Then, in `src/`, run `make`. 
+```
+$ make
+```
+
+## Example
+
+To compile a Scheme program, run:
+```
+$ ./s2b tests/factorial-test.scm > factorial-test.core
+```
+More tests are listed in the `tests`
+directory.
+
+To compile a Scheme program and run our parallelization pass, run:
+```
+$ ./s2b tests/id2.scm -m > id2.core 
+```
+
+### Run on the BEAM
+
+To run on the BEAM, compile the `.core` files down to BEAM bytecode by running, for example:
+```
+$ erlc factorial-test.core
+```
+Then, in the same directory, open up the command-line interpreter for Erlang, `erl` and run:
+```
+> c(factorial-test).
+> factorial-test:factorial(5).
+```
 
