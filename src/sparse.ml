@@ -65,12 +65,13 @@ let rec parse(e: Cenv.env) (s: Sexp.t): (Cenv.env * Cerl.cexp) =
   | _ -> raise (ParserError ("Global stuck: " ^ Sexp.to_string s ))
 and
 
-  parse_define(e: env) (params: Sexp.t) (body: Sexp.t) : (env * cexp) = 
+  parse_define(e: env) (params: Sexp.t) (body: Sexp.t) : (env * cexp) =
   let (name, args) =
     match params with
-    | Sexp.Atom(n) -> (n, [])
-    | Sexp.List(Sexp.Atom(h) :: []) -> (h, [])
-    | Sexp.List(Sexp.Atom(h) :: t) -> (h, List.map (fun x -> let env', expr' = parse e x in expr') t)
+    | Sexp.Atom(n) -> let ()  = print_string "here" in (n, [])
+    | Sexp.List(Sexp.Atom(h) :: []) -> let () = print_string "here" in (h, [])
+    | Sexp.List(Sexp.Atom(h) :: t) ->
+       (h, List.map (fun x -> let env', expr' = parse e x in expr') t)
   in
   (* add func here with empty body to avoid recursion problem *)
   let env' = Cenv.add name (Fun(name, List.length args, args, Values([]))) e  
@@ -88,7 +89,10 @@ and
   | "#f" -> (e, Atom("false"))
   | "#t" -> (e, Atom("true"))
   | s when is_int s -> let i = (int_of_string s) in (e, Int(i))
-  | s -> (e, Var(s))
+  | s -> (match (Cenv.lookup s e) with
+	 | Fun(name, ar, args, b) -> (e, Var(s))
+	 | Var("fail") -> (e, Var("_"^s)))
+     (* (e, Var(s)) *)
   (* | s -> Atom(s) *) (* todo *)
 and
 
@@ -104,9 +108,9 @@ and
 parse_func(e: Cenv.env) (name: string) (args: Sexp.t) (body: Sexp.t) : (env * cexp) =
   let aux arglist = 
     match arglist with
-    | Sexp.Atom(a) -> [Var(a)]
+    | Sexp.Atom(a) -> [Var("_" ^ a)]
     (* assuming args are just strings and not evaluatable cerl expressions *)
-    | Sexp.List(l) -> List.map (fun x -> match x with Sexp.Atom(v) -> Cerl.Var(v)) l
+    | Sexp.List(l) -> List.map (fun x -> match x with Sexp.Atom(v) -> Cerl.Var("_" ^ v)) l
   in
   let e', b' = parse e body
   in

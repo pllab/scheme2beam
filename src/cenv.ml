@@ -26,7 +26,8 @@ let rec lookup name env =
         Ctx.find name bindings
     with
         Not_found -> match parent with  (* Lookup in parent frame. *)
-                     | None -> failwith (name ^ " not found in " ^ (String.concat " " (env_to_string env)))
+                     (* | None -> failwith (name ^ " not found in " ^ (String.concat " " (env_to_string env))) *)
+		     | None -> Var("fail")
                      | Some parent_env -> lookup name parent_env
 
 (* Add a value to an environment. *)
