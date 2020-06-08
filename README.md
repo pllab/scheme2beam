@@ -28,7 +28,7 @@ $ make
 
 To compile a Scheme program, run:
 ```
-$ ./s2b tests/factorial-test.scm > factorial-test.core
+$ ./s2b tests/factorial_test.scm > factorial-test.core
 ```
 More tests are listed in the `tests`
 directory.
@@ -42,11 +42,11 @@ $ ./s2b tests/id2.scm -m > id2.core
 
 To run on the BEAM, compile the `.core` files down to BEAM bytecode by running, for example:
 ```
-$ erlc factorial-test.core
+$ erlc factorial_test.core
 ```
 Then, in the same directory, open up the command-line interpreter for Erlang, `erl` and run:
 ```
-> c(factorial-test).
-> factorial-test:factorial(5).
+> c(factorial_test).
+> factorial_test:factorial(5).
 ```
 
