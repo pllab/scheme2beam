@@ -46,7 +46,6 @@ $ erlc factorial_test.core
 ```
 Then, in the same directory, open up the command-line interpreter for Erlang, `erl` and run:
 ```
-> c(factorial_test).
 > factorial_test:factorial(5).
 ```
 
